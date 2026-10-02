@@ -88,18 +88,62 @@ python3 -m http.server 8080
 ## Deploying to cerkez.ch
 
 This repo already includes a `CNAME` file set to `cerkez.ch`, which is what
-GitHub Pages needs for a custom domain.
+GitHub Pages needs for a custom domain. **Don't delete this file** — if
+it's missing, GitHub Pages will refuse to serve the custom domain even
+once DNS is correct. (It went missing once already — restored it.)
 
-1. In the GitHub repo: **Settings → Pages** → set source to the `main`
-   branch (root).
-2. At your domain registrar / DNS provider for `cerkez.ch`, point the apex
-   domain at GitHub Pages:
-   - `A` records for `@` → `185.199.108.153`, `185.199.109.153`,
-     `185.199.110.153`, `185.199.111.153`
-   - (optional) `CNAME` record for `www` → `markocerkez.github.io`
-3. Back in GitHub Pages settings, enable **Enforce HTTPS** once the
-   certificate is issued (can take a few minutes to hours after DNS
-   propagates).
+### 1. GitHub side
+
+1. **Settings → Pages** → Source: deploy from the `main` branch, root.
+2. Under "Custom domain", type `cerkez.ch` and save. GitHub will show a
+   DNS check that fails until step 2 below is done — that's expected,
+   leave the field saved and move on.
+3. Come back after DNS has propagated (see below) and tick
+   **Enforce HTTPS** once it's no longer greyed out — the certificate
+   takes a few minutes to a few hours to issue after GitHub can verify
+   the domain.
+
+### 2. Hostpoint side (your registrar)
+
+1. Log into the **Hostpoint Control Panel** → **Domains** →
+   **Edit DNS zone** for `cerkez.ch`.
+2. Switch to manual editing and add these records. For the root domain
+   itself, leave the **Name** field blank (not `@`) — that's Hostpoint's
+   convention for "this applies to cerkez.ch itself, no subdomain".
+
+   | Type | Name | Value |
+   |---|---|---|
+   | A | *(blank)* | `185.199.108.153` |
+   | A | *(blank)* | `185.199.109.153` |
+   | A | *(blank)* | `185.199.110.153` |
+   | A | *(blank)* | `185.199.111.153` |
+   | AAAA (optional, IPv6) | *(blank)* | `2606:50c0:8000::153` |
+   | AAAA (optional, IPv6) | *(blank)* | `2606:50c0:8001::153` |
+   | AAAA (optional, IPv6) | *(blank)* | `2606:50c0:8002::153` |
+   | AAAA (optional, IPv6) | *(blank)* | `2606:50c0:8003::153` |
+   | CNAME (optional) | `www` | `markocerkez.github.io` |
+
+3. Save/apply. If Hostpoint already has a default A record pointing
+   `cerkez.ch` somewhere (e.g. a parking page), replace rather than
+   duplicate it — two A records with the same name but different IPs is
+   fine (that's normal for GitHub Pages, which needs all four), but don't
+   leave an old unrelated IP in there too.
+
+### 3. Wait and verify
+
+DNS changes can take anywhere from a few minutes to a few hours to
+propagate. To check without waiting blindly:
+
+```bash
+dig cerkez.ch +short
+# should eventually list the four 185.199.10x.153 addresses
+```
+
+Once that resolves correctly, `https://cerkez.ch` should load the site
+(it may show a GitHub Pages "not secure" warning for a bit until the
+certificate from step 1.3 finishes issuing — that's expected, not a
+sign something's wrong). Until then, `https://markocerkez.github.io/Portfolio/`
+keeps working regardless of DNS.
 
 If you'd rather host elsewhere (Netlify, Vercel, Cloudflare Pages), it's a
 static site — just point the host at the repo root; the `CNAME` file is
