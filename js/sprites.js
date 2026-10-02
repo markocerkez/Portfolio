@@ -35,6 +35,8 @@ const PIXEL_PALETTE = {
   // water (mini-map)
   a: "#5ec8f5", // water light
   z: "#2f8fd4", // water dark
+  // butterfly wing
+  x: "#ff8f3c",
 };
 
 function pixelSpriteSVG(rows, palette, pixelSize) {
@@ -123,6 +125,22 @@ const CLOUDS = {
     "k"
   ),
 };
+
+const BUTTERFLY_WING = rectUnionRows(
+  [
+    { x: 0, y: 0, w: 5, h: 3 },
+    { x: 1, y: 3, w: 4, h: 2 },
+    { x: 2, y: 5, w: 2, h: 1 },
+  ],
+  "x",
+  "k"
+);
+const BUTTERFLY = [
+  "....k.k....",
+  ...BUTTERFLY_WING.map(
+    (row, i) => row.split("").reverse().join("") + "k" + row
+  ),
+];
 
 const SPRITES = {
   blobIdle: [
@@ -218,6 +236,7 @@ const SPRITES = {
     "..kllk.",
     "...kk..",
   ],
+  butterfly: BUTTERFLY,
   // golden "shiny" variant of the blob mascot — easter-egg only
   blobShiny: [
     ".....kkkkkk.....",

@@ -15,6 +15,43 @@
 
   let shinyMode = false;
 
+  /* ---------- ambient background: clouds, floating motes, butterflies ---------- */
+  function renderAmbient() {
+    const root = $("#ambient-bg");
+
+    ["medium", "small", "large"].forEach((size, i) => {
+      const el = document.createElement("div");
+      el.className = `ambient-cloud ambient-cloud--${i + 1}`;
+      el.innerHTML = cloudSprite(size, 6);
+      root.appendChild(el);
+    });
+
+    const moteColors = ["#ffd34d", "#ff8fab", "#9fe6c2"];
+    const moteCount = 16;
+    for (let i = 0; i < moteCount; i++) {
+      const m = document.createElement("div");
+      m.className = "mote";
+      const dur = 9 + Math.random() * 9;
+      m.style.setProperty("--x", Math.random() * 100 + "%");
+      m.style.setProperty("--dur", dur + "s");
+      m.style.setProperty("--delay", -(Math.random() * dur) + "s");
+      m.style.setProperty("--sway", Math.round((Math.random() - 0.5) * 80) + "px");
+      m.style.setProperty("--size", 2 + Math.round(Math.random() * 3) + "px");
+      m.style.setProperty("--mote-color", moteColors[i % moteColors.length]);
+      root.appendChild(m);
+    }
+
+    ["a", "b"].forEach((variant) => {
+      const b = document.createElement("div");
+      b.className = `butterfly butterfly--${variant}`;
+      const wings = document.createElement("div");
+      wings.className = "butterfly__wings";
+      wings.innerHTML = sprite("butterfly", 2.4);
+      b.appendChild(wings);
+      root.appendChild(b);
+    });
+  }
+
   /* ---------- hero ---------- */
   function renderHero() {
     $("#cloud-1").innerHTML = cloudSprite("medium", 7);
@@ -406,6 +443,7 @@
   }
 
   function init() {
+    renderAmbient();
     renderHero();
     renderTrainer();
     renderEducation();
