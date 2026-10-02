@@ -504,12 +504,18 @@
 
     const pins = document.createElement("div");
     pins.className = "map-modal__pins";
-    MAP_PINS.forEach((p) => {
+    MAP_PINS.forEach((p, i) => {
+      // The pop-in animation lives on this wrapper so it never fights
+      // with the pin button's own rotate/hover transform.
+      const wrap = document.createElement("div");
+      wrap.className = "map-pin-pop";
+      wrap.style.left = `calc(var(--tile-size) * ${p.col} + var(--tile-size) / 2)`;
+      wrap.style.top = `calc(var(--tile-size) * ${p.row} + var(--tile-size) / 2)`;
+      wrap.style.setProperty("--i", i);
+
       const btn = document.createElement("button");
       btn.className = "map-pin";
       btn.title = p.title;
-      btn.style.left = `calc(var(--tile-size) * ${p.col} + var(--tile-size) / 2)`;
-      btn.style.top = `calc(var(--tile-size) * ${p.row} + var(--tile-size) / 2)`;
       btn.innerHTML = `<span>${p.label}</span>`;
       btn.addEventListener("click", () => {
         closeMap();
@@ -517,7 +523,8 @@
         if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
         playBlip(520);
       });
-      pins.appendChild(btn);
+      wrap.appendChild(btn);
+      pins.appendChild(wrap);
     });
     stage.appendChild(pins);
   }

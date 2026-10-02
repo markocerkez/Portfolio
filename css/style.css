@@ -202,6 +202,12 @@ img, svg { image-rendering: pixelated; }
   .key-item { animation: none; }
   .dialog-box__cursor.is-ready { animation: none; opacity: 1; }
   .hero__ground { animation: none; }
+  .item__chest .chest-closed, .item__chest .chest-open { transition: none; }
+  .item:hover .item__chest .chest-open, .item:focus-within .item__chest .chest-open {
+    animation: none;
+  }
+  .map-pin-pop { animation: none !important; opacity: 1; transform: scale(1); }
+  .map-modal__tiles { transition: none; }
 }
 
 /* ---------- topbar / quest menu ---------- */
@@ -622,11 +628,35 @@ img, svg { image-rendering: pixelated; }
   cursor: pointer;
 }
 .item:hover, .item:focus-within { transform: translateY(-6px); box-shadow: var(--shadow-hard); }
-.item__chest { margin: 0 auto 10px; width: 68px; }
-.item__chest .chest-closed { display: block; }
-.item__chest .chest-open { display: none; }
-.item:hover .chest-closed, .item:focus-within .chest-closed { display: none; }
-.item:hover .chest-open, .item:focus-within .chest-open { display: block; }
+.item__chest { position: relative; margin: 0 auto 10px; width: 68px; height: 44px; }
+.item__chest .chest-closed,
+.item__chest .chest-open {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  transform-origin: bottom center;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.item__chest .chest-closed { opacity: 1; transform: scale(1) rotate(0deg); }
+.item__chest .chest-open { opacity: 0; transform: scale(0.7) rotate(-8deg); }
+.item:hover .item__chest .chest-closed,
+.item:focus-within .item__chest .chest-closed {
+  opacity: 0;
+  transform: scale(0.8) rotate(8deg);
+}
+.item:hover .item__chest .chest-open,
+.item:focus-within .item__chest .chest-open {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+  animation: chestPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes chestPop {
+  0% { transform: scale(0.55) rotate(-10deg); }
+  65% { transform: scale(1.15) rotate(4deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
 .item__name { font-size: 19px; font-weight: bold; margin: 4px 0; }
 .item__tech {
   display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
@@ -774,7 +804,11 @@ img, svg { image-rendering: pixelated; }
   display: grid;
   grid-template-columns: repeat(11, var(--tile-size));
   grid-template-rows: repeat(7, var(--tile-size));
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
+.map-modal.is-open .map-modal__tiles { opacity: 1; transform: scale(1); }
 .tile { position: relative; }
 .tile--grass { background: var(--grass-1); }
 .tile--grass-alt { background: var(--grass-2); }
@@ -785,8 +819,21 @@ img, svg { image-rendering: pixelated; }
 @keyframes shimmer { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.12); } }
 
 .map-modal__pins { position: absolute; inset: 0; }
-.map-pin {
+.map-pin-pop {
   position: absolute;
+  opacity: 0;
+  transform: scale(0.3);
+}
+.map-modal.is-open .map-pin-pop {
+  animation: pinPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation-delay: calc(var(--i, 0) * 55ms + 150ms);
+}
+@keyframes pinPop {
+  0% { opacity: 0; transform: scale(0.3); }
+  70% { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.map-pin {
   background: var(--danger);
   color: var(--paper);
   border: 2px solid var(--ink);
