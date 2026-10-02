@@ -276,14 +276,19 @@
 
   /* ---------- achievements ---------- */
   const ACHIEVEMENTS = [
-    { id: "explorer", title: "World Explorer", desc: "Visit every section of the site.", icon: "🧭" },
-    { id: "treasure_hunter", title: "Treasure Hunter", desc: "Open every chest in the Item Bag.", icon: "📦" },
-    { id: "cartographer", title: "Cartographer", desc: "Open the overworld map.", icon: "🗺️" },
-    { id: "weather_watcher", title: "Weather Watcher", desc: "Try every kind of weather.", icon: "🌦️" },
-    { id: "night_owl", title: "Night Owl", desc: "Switch to night mode.", icon: "🌙" },
-    { id: "secret_grove", title: "Secret Grove", desc: "Find the hidden easter egg.", icon: "🍃" },
-    { id: "completionist", title: "Completionist", desc: "Unlock every other achievement.", icon: "🏆" },
+    { id: "explorer", title: "World Explorer", desc: "Visit every section of the site.", icon: "badgeCompass" },
+    { id: "treasure_hunter", title: "Treasure Hunter", desc: "Open every chest in the Item Bag.", icon: "chestClosed" },
+    { id: "cartographer", title: "Cartographer", desc: "Open the overworld map.", icon: "badgeMap" },
+    { id: "weather_watcher", title: "Weather Watcher", desc: "Try every kind of weather.", icon: "cloud:medium" },
+    { id: "night_owl", title: "Night Owl", desc: "Switch to night mode.", icon: "moon" },
+    { id: "secret_grove", title: "Secret Grove", desc: "Find the hidden easter egg.", icon: "leaf" },
+    { id: "completionist", title: "Completionist", desc: "Unlock every other achievement.", icon: "badgeTrophy" },
   ];
+  /* icon is a SPRITES name, or "cloud:<name>" for a CLOUDS entry */
+  function badgeIconSVG(iconName, size) {
+    if (iconName.startsWith("cloud:")) return cloudSprite(iconName.slice(6), size || 4);
+    return sprite(iconName, size || 4);
+  }
   let unlockedAchievements = new Set();
   function loadAchievements() {
     try {
@@ -303,8 +308,9 @@
       const unlocked = unlockedAchievements.has(a.id);
       const div = document.createElement("div");
       div.className = "badge " + (unlocked ? "is-unlocked" : "is-locked");
+      const iconSvg = unlocked ? badgeIconSVG(a.icon) : sprite("badgeLocked", 4);
       div.innerHTML = `
-        <span class="badge__icon">${unlocked ? a.icon : "❓"}</span>
+        <span class="badge__icon">${iconSvg}</span>
         <span class="badge__title">${unlocked ? a.title : "???"}</span>
         <p class="badge__desc">${unlocked ? a.desc : "Hidden until unlocked."}</p>`;
       wrap.appendChild(div);
@@ -317,7 +323,7 @@
     saveAchievements();
     const a = ACHIEVEMENTS.find((x) => x.id === id);
     if (a && !opts.silent) {
-      showToast(`${a.icon} ACHIEVEMENT UNLOCKED\n${a.title} — ${a.desc}`);
+      showToast(`ACHIEVEMENT UNLOCKED\n${a.title} — ${a.desc}`);
       playBlip(988);
       setTimeout(() => playBlip(1318), 120);
     }
@@ -759,7 +765,7 @@
       m.classList.add("is-shiny");
     });
     spawnLeaves(18);
-    showToast("🍃 ACHIEVEMENT UNLOCKED\nSecret Grove Found! A shiny blob rustles by.");
+    showToast("ACHIEVEMENT UNLOCKED\nSecret Grove Found! A shiny blob rustles by.");
     unlockAchievement("secret_grove", { silent: true });
     playBlip(988);
     setTimeout(() => playBlip(1318), 120);

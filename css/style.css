@@ -1050,7 +1050,14 @@ img, svg { image-rendering: pixelated; }
   padding: 14px 10px;
   transition: transform 0.15s ease;
 }
-.badge__icon { font-size: 26px; line-height: 1; }
+.badge__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+}
+.badge__icon svg { width: 34px; height: auto; max-height: 40px; }
+.badge.is-locked .badge__icon svg { width: 24px; }
 .badge__title { font-family: var(--font-head); font-size: 9px; }
 .badge__desc { font-size: 14px; color: #6a5c3f; margin: 0; }
 .badge.is-locked {

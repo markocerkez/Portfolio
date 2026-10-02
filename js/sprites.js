@@ -271,6 +271,53 @@ const SPRITES = {
     "..kwk..",
     "...k...",
   ],
+  // achievement badge icons
+  badgeCompass: [
+    "....k....",
+    "...kwk...",
+    "..kwrwk..",
+    ".kwrrrwk.",
+    "kwwrkrwwk",
+    ".kwzzzwk.",
+    "..kwzwk..",
+    "...kwk...",
+    "....k....",
+  ],
+  badgeMap: [
+    "kkkkkkkkk",
+    "koooooook",
+    "koooooook",
+    "koooroook",
+    "koorrrook",
+    "koooroook",
+    "koooooook",
+    "kkkkkkkkk",
+  ],
+  badgeTrophy: [
+    ".kkkkkkk.",
+    "kyyyyyyyk",
+    "kyyyyyyyk",
+    ".kyyyyyk.",
+    "k.kyyyk.k",
+    "k..kyk..k",
+    "...kyk...",
+    "..kuuuk..",
+    "..kuuuk..",
+    ".kuuuuuk.",
+  ],
+  // shown for a locked/unearned achievement — deliberately generic so it
+  // never spoils what the real icon looks like
+  badgeLocked: [
+    ".kkkk..",
+    "kk..kk.",
+    "....kk.",
+    "...kk..",
+    "..kk...",
+    "..kk...",
+    ".......",
+    "..kk...",
+    "..kk...",
+  ],
   // golden "shiny" variant of the blob mascot — easter-egg only
   blobShiny: [
     ".....kkkkkk.....",
