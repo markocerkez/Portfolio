@@ -1,6 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script>
+  // Applied before first paint so there's no flash of the wrong theme.
+  try {
+    var savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "night") document.documentElement.setAttribute("data-theme", "night");
+  } catch (e) {}
+</script>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Marko Cerkez // Portfolio</title>
@@ -13,7 +20,9 @@
 </head>
 <body>
 
-<div class="ambient-bg" id="ambient-bg" aria-hidden="true"></div>
+<div class="ambient-bg" id="ambient-bg" aria-hidden="true">
+  <div class="stars" id="ambient-stars"></div>
+</div>
 <div class="crt-overlay" aria-hidden="true"></div>
 
 <header class="topbar">
@@ -24,15 +33,21 @@
     <button data-target="work">WORK</button>
     <button data-target="projects">ITEMS</button>
     <button data-target="contact">TALK</button>
+    <button data-target="patches">PATCHES</button>
   </nav>
   <button id="map-toggle" class="icon-btn" title="Open the overworld map">🗺 MAP</button>
+  <button id="weather-toggle" class="icon-btn" title="Cycle the weather">☀ CLEAR</button>
+  <button id="theme-toggle" class="icon-btn" title="Toggle day / night">🌙 NIGHT</button>
   <button id="sound-toggle" class="icon-btn" title="Toggle sound" aria-pressed="false">SFX: OFF</button>
+  <div class="xp-bar" id="xp-bar"><div class="xp-bar__fill" id="xp-fill"></div></div>
 </header>
 
 <main id="app">
 
   <section id="hero" class="hero">
     <div class="hero__sky">
+      <div class="stars" id="hero-stars"></div>
+      <div class="moon" id="hero-moon"></div>
       <div class="cloud cloud--1" id="cloud-1"></div>
       <div class="cloud cloud--2" id="cloud-2"></div>
       <div class="cloud cloud--3" id="cloud-3"></div>
@@ -69,6 +84,7 @@
           <span class="trainer-card__value" id="trainer-location"></span>
         </div>
         <p class="trainer-card__bio" id="trainer-bio"></p>
+        <div id="trainer-resume"></div>
       </div>
       <div class="trainer-card__stats" id="trainer-stats"></div>
     </div>
@@ -102,6 +118,11 @@
     </div>
   </section>
 
+  <section id="patches" class="panel panel--alt">
+    <h2 class="panel__title"><span class="panel__title-badge">06</span> PATCH NOTES</h2>
+    <div class="patch-notes" id="patch-notes"></div>
+  </section>
+
 </main>
 
 <footer class="footer">
@@ -121,6 +142,7 @@
 </div>
 
 <div class="leaf-field" id="leaf-field" aria-hidden="true"></div>
+<div class="weather-field" id="weather-field" aria-hidden="true"></div>
 <div class="toast" id="egg-toast" aria-hidden="true"></div>
 
 <script src="js/sprites.js"></script>

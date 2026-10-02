@@ -25,6 +25,9 @@ const SITE_DATA = {
     class: "??? FULL-STACK DEVELOPER",
     location: "??? Switzerland",
     bio: "??? Write 2-3 sentences about yourself here: who you are, what you're into, what you're working on right now.",
+    // Path to your CV/resume PDF — drop the file into assets/ and point this
+    // at it. Leave as "" to hide the "Get Scroll of Resume" button entirely.
+    resumeUrl: "assets/resume.pdf",
     // Skill bars, 0-100. Add/remove as many as you like.
     stats: [
       { label: "JAVA", value: 0 },
@@ -114,4 +117,37 @@ const SITE_DATA = {
   footer: {
     text: "??? Marko Cerkez — built pixel by pixel.",
   },
+
+  // "PATCH NOTES" — a changelog for the site itself. Add a new entry
+  // (to the top of the array) whenever you update your portfolio — it's
+  // a nice bit of flavor and doubles as a real log of what changed.
+  patchNotes: [
+    {
+      version: "v1.3",
+      notes: [
+        "Added a day/night cycle, typewriter dialogue, and toggleable weather.",
+        "Added an XP bar, a resume scroll pickup, and a custom pixel cursor.",
+      ],
+    },
+    {
+      version: "v1.2",
+      notes: [
+        "8-bit clouds, floating pollen and fluttering butterflies now drift through the world.",
+        "Fixed a bug where treasure chests and trees rendered as empty outlines.",
+      ],
+    },
+    {
+      version: "v1.1",
+      notes: [
+        "Added an openable overworld mini-map.",
+        "Added a very well-hidden easter egg. Good luck finding it.",
+      ],
+    },
+    {
+      version: "v1.0",
+      notes: [
+        "Portfolio cartridge inserted: trainer card, quest log, world map, item bag and NPC dialogue online.",
+      ],
+    },
+  ],
 };

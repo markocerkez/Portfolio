@@ -15,6 +15,31 @@
 
   let shinyMode = false;
 
+  function prefersReducedMotion() {
+    return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  /* Reveals `text` into `el` one character at a time, old-RPG style.
+     Returns a promise that resolves once the full line is in. Instantly
+     fills the text for anyone who prefers reduced motion. */
+  function typewriter(el, text, speed) {
+    return new Promise((resolve) => {
+      if (prefersReducedMotion()) {
+        el.textContent = text;
+        resolve();
+        return;
+      }
+      el.textContent = "";
+      let i = 0;
+      (function step() {
+        el.textContent += text[i];
+        i++;
+        if (i < text.length) setTimeout(step, speed || 28);
+        else resolve();
+      })();
+    });
+  }
+
   /* ---------- ambient background: clouds, floating motes, butterflies ---------- */
   function renderAmbient() {
     const root = $("#ambient-bg");
@@ -79,14 +104,20 @@
     $("#hero-mascot").innerHTML = sprite("blobIdle", 8);
     $("#hero-name").textContent = SITE_DATA.meta.name;
     $("#hero-role").textContent = SITE_DATA.meta.role;
-    $("#hero-tagline").textContent = SITE_DATA.meta.tagline;
+    $("#hero-intro-lines").innerHTML = "";
+  }
+
+  /* Types the hero dialogue box out, tagline first then each intro line,
+     then reveals the "waiting for input" cursor. */
+  async function typeHeroText() {
+    await typewriter($("#hero-tagline"), SITE_DATA.meta.tagline, 32);
     const introWrap = $("#hero-intro-lines");
-    introWrap.innerHTML = "";
-    SITE_DATA.meta.introLines.forEach((line) => {
+    for (const line of SITE_DATA.meta.introLines) {
       const p = document.createElement("p");
-      p.textContent = line;
       introWrap.appendChild(p);
-    });
+      await typewriter(p, line, 20);
+    }
+    $("#hero-dialog .dialog-box__cursor").classList.add("is-ready");
   }
 
   /* ---------- trainer card ---------- */
@@ -102,6 +133,11 @@
     $("#trainer-class").textContent = t.class;
     $("#trainer-location").textContent = t.location;
     $("#trainer-bio").textContent = t.bio;
+
+    const resumeWrap = $("#trainer-resume");
+    resumeWrap.innerHTML = t.resumeUrl
+      ? `<a class="key-item" href="${t.resumeUrl}" download>📜 GET SCROLL OF RESUME</a>`
+      : "";
 
     const statsWrap = $("#trainer-stats");
     statsWrap.innerHTML = "";
@@ -184,7 +220,6 @@
   /* ---------- contact ---------- */
   function renderContact() {
     $("#npc-mascot").innerHTML = sprite("blobIdle", 7);
-    $("#contact-message").textContent = SITE_DATA.contact.message;
     const links = $("#contact-links");
     links.innerHTML = "";
     const c = SITE_DATA.contact;
@@ -192,6 +227,27 @@
     if (c.github) links.innerHTML += `<a href="${c.github}" target="_blank" rel="noopener">GITHUB</a>`;
     if (c.linkedin) links.innerHTML += `<a href="${c.linkedin}" target="_blank" rel="noopener">LINKEDIN</a>`;
     $("#footer-text").textContent = SITE_DATA.footer.text;
+  }
+
+  let contactTyped = false;
+  async function typeContactText() {
+    if (contactTyped) return;
+    contactTyped = true;
+    await typewriter($("#contact-message"), SITE_DATA.contact.message, 22);
+    $("#contact .dialog-box__cursor").classList.add("is-ready");
+  }
+
+  /* ---------- patch notes ---------- */
+  function renderPatchNotes() {
+    const wrap = $("#patch-notes");
+    wrap.innerHTML = "";
+    SITE_DATA.patchNotes.forEach((p) => {
+      const div = document.createElement("div");
+      div.className = "patch";
+      const items = p.notes.map((n) => `<li>${n}</li>`).join("");
+      div.innerHTML = `<span class="patch__version">${p.version}</span><ul class="patch__notes">${items}</ul>`;
+      wrap.appendChild(div);
+    });
   }
 
   /* ---------- menu + scroll ---------- */
@@ -223,6 +279,9 @@
               statFills.forEach((f) => {
                 f.style.width = f.dataset.value + "%";
               });
+            }
+            if (entry.target.id === "contact") {
+              typeContactText();
             }
           }
         });
@@ -279,6 +338,129 @@
     });
   }
 
+  /* ---------- day / night theme ---------- */
+  function renderStars(container, count) {
+    for (let i = 0; i < count; i++) {
+      const s = document.createElement("div");
+      s.className = "star";
+      s.style.left = Math.random() * 100 + "%";
+      s.style.top = Math.random() * 70 + "%";
+      s.style.setProperty("--dur", 2 + Math.random() * 3 + "s");
+      s.style.setProperty("--delay", -(Math.random() * 4) + "s");
+      s.style.setProperty("--peak", (0.4 + Math.random() * 0.5).toFixed(2));
+      container.appendChild(s);
+    }
+  }
+
+  function applyTheme(theme) {
+    if (theme === "night") {
+      document.documentElement.setAttribute("data-theme", "night");
+      $("#theme-toggle").textContent = "☀ DAY";
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+      $("#theme-toggle").textContent = "🌙 NIGHT";
+    }
+  }
+
+  function wireTheme() {
+    renderStars($("#hero-stars"), 40);
+    renderStars($("#ambient-stars"), 50);
+    $("#hero-moon").innerHTML = sprite("moon", 5);
+
+    let saved = "day";
+    try {
+      saved = localStorage.getItem("theme") || "day";
+    } catch (e) {}
+    applyTheme(saved);
+
+    $("#theme-toggle").addEventListener("click", () => {
+      const next = document.documentElement.getAttribute("data-theme") === "night" ? "day" : "night";
+      applyTheme(next);
+      try {
+        localStorage.setItem("theme", next);
+      } catch (e) {}
+      playBlip(next === "night" ? 440 : 660);
+    });
+  }
+
+  /* ---------- weather ---------- */
+  function wireWeather() {
+    const states = ["clear", "rain", "snow"];
+    const labels = { clear: "☀ CLEAR", rain: "🌧 RAIN", snow: "❄ SNOW" };
+    let idx = 0;
+    const field = $("#weather-field");
+    const btn = $("#weather-toggle");
+
+    function renderWeather(state) {
+      field.innerHTML = "";
+      btn.textContent = labels[state];
+      if (prefersReducedMotion() || state === "clear") return;
+      const count = state === "rain" ? 44 : 26;
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement("div");
+        el.className = state === "rain" ? "rain-drop" : "snow-flake";
+        el.style.left = Math.random() * 100 + "%";
+        if (state === "rain") {
+          const dur = 0.5 + Math.random() * 0.4;
+          el.style.animationDuration = dur + "s";
+          el.style.animationDelay = -(Math.random() * dur) + "s";
+        } else {
+          const dur = 6 + Math.random() * 6;
+          el.style.animationDuration = dur + "s";
+          el.style.animationDelay = -(Math.random() * dur) + "s";
+          el.style.setProperty("--size", 3 + Math.round(Math.random() * 3) + "px");
+          el.style.setProperty("--sway", Math.round((Math.random() - 0.5) * 100) + "px");
+        }
+        field.appendChild(el);
+      }
+    }
+
+    btn.addEventListener("click", () => {
+      idx = (idx + 1) % states.length;
+      renderWeather(states[idx]);
+      playBlip(520 + idx * 80);
+    });
+  }
+
+  /* ---------- XP bar: fills as you scroll through the page ---------- */
+  function wireXpBar() {
+    const fill = $("#xp-fill");
+    let ticking = false;
+    function update() {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = max > 0 ? Math.min(100, Math.max(0, (window.scrollY / max) * 100)) : 0;
+      fill.style.width = pct + "%";
+      ticking = false;
+    }
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!ticking) {
+          requestAnimationFrame(update);
+          ticking = true;
+        }
+      },
+      { passive: true }
+    );
+    window.addEventListener("resize", update);
+    update();
+  }
+
+  /* ---------- custom pixel cursor ---------- */
+  function wireCursor() {
+    if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) return;
+    const arrow = "data:image/svg+xml," + encodeURIComponent(sprite("cursor", 2));
+    const point = "data:image/svg+xml," + encodeURIComponent(sprite("cursorPoint", 3));
+    document.documentElement.style.cursor = `url("${arrow}") 1 1, auto`;
+    const style = document.createElement("style");
+    style.textContent = `
+      button, a, .item, .map-pin, .hero__mascot, input, select, textarea, [role="button"] {
+        cursor: url("${point}") 10 10, pointer;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
   /* ---------- overworld mini-map ---------- */
   const TILE_MAP = [
     "ggtggggtggg",
@@ -295,6 +477,7 @@
     { row: 3, col: 8, label: "03", target: "work", title: "World Map" },
     { row: 5, col: 5, label: "04", target: "projects", title: "Item Bag" },
     { row: 5, col: 8, label: "05", target: "contact", title: "Talk to NPC" },
+    { row: 1, col: 5, label: "06", target: "patches", title: "Patch Notes" },
   ];
 
   function renderMap() {
@@ -426,7 +609,6 @@
     let taps = 0;
     let tapTimer = null;
     const hero = $("#hero-mascot");
-    hero.style.cursor = "pointer";
     hero.addEventListener("click", () => {
       hero.classList.remove("is-squish");
       void hero.offsetWidth; // restart animation
@@ -450,12 +632,18 @@
     renderWork();
     renderProjects();
     renderContact();
+    renderPatchNotes();
     wireNav();
     wireReveal();
     wireBlink();
     wireSound();
     wireMap();
     wireEasterEgg();
+    wireTheme();
+    wireWeather();
+    wireXpBar();
+    wireCursor();
+    setTimeout(typeHeroText, 400);
   }
 
   document.addEventListener("DOMContentLoaded", init);

@@ -237,6 +237,40 @@ const SPRITES = {
     "...kk..",
   ],
   butterfly: BUTTERFLY,
+  moon: [
+    "..kkkk..",
+    ".kwwwwk.",
+    "kwwwuwwk",
+    "kwwwwwwk",
+    "kwuwwwwk",
+    "kwwwwwwk",
+    ".kwwwwk.",
+    "..kkkk..",
+  ],
+  // custom cursor sprites — a default arrow and a "selection diamond"
+  // for anything clickable, built once at load and set as the page cursor
+  cursor: [
+    "k.......",
+    "kk......",
+    "kwk.....",
+    "kwwk....",
+    "kwwwk...",
+    "kwwwwk..",
+    "kwwwwwk.",
+    "kwwwwwww",
+    "kwwkkk..",
+    "kk.k....",
+    "k..k....",
+  ],
+  cursorPoint: [
+    "...k...",
+    "..kwk..",
+    ".kwwwk.",
+    "kwwwwwk",
+    ".kwwwk.",
+    "..kwk..",
+    "...k...",
+  ],
   // golden "shiny" variant of the blob mascot — easter-egg only
   blobShiny: [
     ".....kkkkkk.....",
