@@ -1,8 +1,8 @@
 # Portfolio — cerkez.ch
 
 A single-page, retro/pixel-art portfolio (Pokémon dialog boxes, a quest log,
-a world map, a treasure-chest item bag) built with plain HTML/CSS/JS — no
-build step, no framework.
+a world map, a treasure-chest item bag, an openable overworld mini-map)
+built with plain HTML/CSS/JS — no build step, no framework.
 
 ## Fill in your info
 
@@ -20,6 +20,16 @@ Things worth knowing while filling it in:
 - Leave `contact.email` / `linkedin` as `""` to hide that link entirely.
 - `trainer.photo`: set to a path like `"assets/avatar.png"` to show a real
   photo instead of the pixel mascot (drop the image into `assets/`).
+
+## Fun extras
+
+- The **🗺 MAP** button in the top bar opens a small overworld-style map
+  (grass, path, a pond, trees) with numbered flags that jump you to each
+  section — closes with the ✕ button, a click outside, or Esc.
+- There's a hidden easter egg: enter the classic Konami code
+  (↑ ↑ ↓ ↓ ← → ← → B A) anywhere on the page, or tap the mascot blob 7
+  times quickly — a "shiny" golden blob appears and leaves rain down for
+  a few seconds. Pure fun, no effect on content.
 
 ## Preview locally
 

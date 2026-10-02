@@ -9,9 +9,18 @@
   function sprite(name, size) {
     return pixelSpriteSVG(SPRITES[name], PIXEL_PALETTE, size || 6);
   }
+  function cloudSprite(name, size) {
+    return pixelSpriteSVG(CLOUDS[name], PIXEL_PALETTE, size || 6);
+  }
+
+  let shinyMode = false;
 
   /* ---------- hero ---------- */
   function renderHero() {
+    $("#cloud-1").innerHTML = cloudSprite("medium", 7);
+    $("#cloud-2").innerHTML = cloudSprite("small", 7);
+    $("#cloud-3").innerHTML = cloudSprite("large", 7);
+
     const ground = $("#hero-ground");
     const scenery = document.createElement("div");
     scenery.className = "hero__scenery";
@@ -190,10 +199,12 @@
   function wireBlink() {
     const mascots = $$("#hero-mascot, #npc-mascot");
     setInterval(() => {
+      if (shinyMode) return; // shiny mascot doesn't blink — it sparkles instead
       mascots.forEach((m) => {
         m.innerHTML = sprite("blobBlink", m.id === "hero-mascot" ? 8 : 7);
       });
       setTimeout(() => {
+        if (shinyMode) return;
         mascots.forEach((m) => {
           m.innerHTML = sprite("blobIdle", m.id === "hero-mascot" ? 8 : 7);
         });
@@ -231,6 +242,169 @@
     });
   }
 
+  /* ---------- overworld mini-map ---------- */
+  const TILE_MAP = [
+    "ggtggggtggg",
+    "ggpppppppgg",
+    "gtpggtggpgg",
+    "ggpgwwggppg",
+    "ggpgwwgtpgg",
+    "gtpppppppgg",
+    "gggtgggggtg",
+  ];
+  const MAP_PINS = [
+    { row: 1, col: 3, label: "01", target: "about", title: "Trainer Card" },
+    { row: 1, col: 7, label: "02", target: "education", title: "Quest Log" },
+    { row: 3, col: 8, label: "03", target: "work", title: "World Map" },
+    { row: 5, col: 5, label: "04", target: "projects", title: "Item Bag" },
+    { row: 5, col: 8, label: "05", target: "contact", title: "Talk to NPC" },
+  ];
+
+  function renderMap() {
+    const stage = $("#map-stage");
+    const tiles = document.createElement("div");
+    tiles.className = "map-modal__tiles";
+    TILE_MAP.forEach((row, r) => {
+      row.split("").forEach((cell, c) => {
+        const tile = document.createElement("div");
+        const alt = (r + c) % 2 === 0;
+        if (cell === "w") tile.className = "tile tile--water";
+        else if (cell === "p") tile.className = "tile tile--path";
+        else tile.className = "tile " + (alt ? "tile--grass" : "tile--grass-alt");
+        if (cell === "t") {
+          const t = document.createElement("div");
+          t.className = "tile__tree";
+          t.innerHTML = sprite("tree", 2);
+          tile.appendChild(t);
+        }
+        tiles.appendChild(tile);
+      });
+    });
+    stage.appendChild(tiles);
+
+    const pins = document.createElement("div");
+    pins.className = "map-modal__pins";
+    MAP_PINS.forEach((p) => {
+      const btn = document.createElement("button");
+      btn.className = "map-pin";
+      btn.title = p.title;
+      btn.style.left = `calc(var(--tile-size) * ${p.col} + var(--tile-size) / 2)`;
+      btn.style.top = `calc(var(--tile-size) * ${p.row} + var(--tile-size) / 2)`;
+      btn.innerHTML = `<span>${p.label}</span>`;
+      btn.addEventListener("click", () => {
+        closeMap();
+        const el = document.getElementById(p.target);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        playBlip(520);
+      });
+      pins.appendChild(btn);
+    });
+    stage.appendChild(pins);
+  }
+
+  function openMap() {
+    $("#map-modal").classList.add("is-open");
+    $("#map-modal").setAttribute("aria-hidden", "false");
+    playBlip(740);
+  }
+  function closeMap() {
+    $("#map-modal").classList.remove("is-open");
+    $("#map-modal").setAttribute("aria-hidden", "true");
+  }
+  function wireMap() {
+    renderMap();
+    $("#map-toggle").addEventListener("click", openMap);
+    $("#map-close").addEventListener("click", closeMap);
+    $("#map-modal").addEventListener("click", (e) => {
+      if (e.target.id === "map-modal") closeMap();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeMap();
+    });
+  }
+
+  /* ---------- easter egg: Konami code / mascot taps → shiny + leaves ---------- */
+  function showToast(text) {
+    const toast = $("#egg-toast");
+    toast.textContent = text;
+    toast.classList.add("is-visible");
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => toast.classList.remove("is-visible"), 4200);
+  }
+
+  function spawnLeaves(count) {
+    const field = $("#leaf-field");
+    for (let i = 0; i < count; i++) {
+      setTimeout(() => {
+        const leaf = document.createElement("div");
+        leaf.className = "falling-leaf";
+        leaf.innerHTML = sprite("leaf", 3);
+        leaf.style.left = Math.random() * 100 + "vw";
+        leaf.style.setProperty("--drift", Math.round((Math.random() - 0.5) * 160) + "px");
+        const duration = 3 + Math.random() * 2.5;
+        leaf.style.animationDuration = duration + "s";
+        field.appendChild(leaf);
+        setTimeout(() => leaf.remove(), duration * 1000 + 200);
+      }, i * 110);
+    }
+  }
+
+  function triggerEasterEgg() {
+    const mascots = $$("#hero-mascot, #npc-mascot");
+    shinyMode = true;
+    mascots.forEach((m, i) => {
+      m.innerHTML = sprite("blobShiny", m.id === "hero-mascot" ? 8 : 7);
+      m.classList.add("is-shiny");
+    });
+    spawnLeaves(18);
+    showToast("🍃 ACHIEVEMENT UNLOCKED\nSecret Grove Found! A shiny blob rustles by.");
+    playBlip(988);
+    setTimeout(() => playBlip(1318), 120);
+    clearTimeout(triggerEasterEgg._t);
+    triggerEasterEgg._t = setTimeout(() => {
+      shinyMode = false;
+      mascots.forEach((m) => {
+        m.classList.remove("is-shiny");
+        m.innerHTML = sprite("blobIdle", m.id === "hero-mascot" ? 8 : 7);
+      });
+    }, 8000);
+  }
+
+  function wireEasterEgg() {
+    const code = [
+      "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown",
+      "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight",
+      "KeyB", "KeyA",
+    ];
+    let pos = 0;
+    document.addEventListener("keydown", (e) => {
+      const key = e.code === "KeyB" || e.code === "KeyA" ? e.code : e.key;
+      pos = key === code[pos] ? pos + 1 : key === code[0] ? 1 : 0;
+      if (pos === code.length) {
+        pos = 0;
+        triggerEasterEgg();
+      }
+    });
+
+    let taps = 0;
+    let tapTimer = null;
+    const hero = $("#hero-mascot");
+    hero.style.cursor = "pointer";
+    hero.addEventListener("click", () => {
+      hero.classList.remove("is-squish");
+      void hero.offsetWidth; // restart animation
+      hero.classList.add("is-squish");
+      playBlip(600 + taps * 30);
+      taps++;
+      clearTimeout(tapTimer);
+      tapTimer = setTimeout(() => (taps = 0), 1400);
+      if (taps >= 7) {
+        taps = 0;
+        triggerEasterEgg();
+      }
+    });
+  }
+
   function init() {
     renderHero();
     renderTrainer();
@@ -242,6 +416,8 @@
     wireReveal();
     wireBlink();
     wireSound();
+    wireMap();
+    wireEasterEgg();
   }
 
   document.addEventListener("DOMContentLoaded", init);

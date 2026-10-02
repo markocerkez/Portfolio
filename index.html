@@ -20,10 +20,11 @@
   <nav class="menu" aria-label="Main menu">
     <button data-target="about">TRAINER</button>
     <button data-target="education">QUESTS</button>
-    <button data-target="work">MAP</button>
+    <button data-target="work">WORK</button>
     <button data-target="projects">ITEMS</button>
     <button data-target="contact">TALK</button>
   </nav>
+  <button id="map-toggle" class="icon-btn" title="Open the overworld map">🗺 MAP</button>
   <button id="sound-toggle" class="icon-btn" title="Toggle sound" aria-pressed="false">SFX: OFF</button>
 </header>
 
@@ -31,9 +32,9 @@
 
   <section id="hero" class="hero">
     <div class="hero__sky">
-      <div class="cloud cloud--1"></div>
-      <div class="cloud cloud--2"></div>
-      <div class="cloud cloud--3"></div>
+      <div class="cloud cloud--1" id="cloud-1"></div>
+      <div class="cloud cloud--2" id="cloud-2"></div>
+      <div class="cloud cloud--3" id="cloud-3"></div>
     </div>
     <div class="hero__content">
       <div class="hero__mascot" id="hero-mascot"></div>
@@ -106,6 +107,20 @@
   <p id="footer-text"></p>
   <button class="icon-btn" id="back-to-top">▲ TOP</button>
 </footer>
+
+<div class="map-modal" id="map-modal" aria-hidden="true">
+  <div class="map-modal__panel" role="dialog" aria-label="Overworld map">
+    <div class="map-modal__header">
+      <span>🗺 OVERWORLD MAP</span>
+      <button id="map-close" class="icon-btn">✕ CLOSE</button>
+    </div>
+    <div class="map-modal__stage" id="map-stage"></div>
+    <p class="map-modal__hint">Click a numbered flag to warp to that part of the site.</p>
+  </div>
+</div>
+
+<div class="leaf-field" id="leaf-field" aria-hidden="true"></div>
+<div class="toast" id="egg-toast" aria-hidden="true"></div>
 
 <script src="js/sprites.js"></script>
 <script src="js/content.js"></script>

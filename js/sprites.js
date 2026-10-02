@@ -30,6 +30,11 @@ const PIXEL_PALETTE = {
   // heart (unused by default, kept for optional future use)
   r: "#ff4d6d",
   m: "#c9184a",
+  // cloud
+  f: "#d7ecfb", // cloud underside shade
+  // water (mini-map)
+  a: "#5ec8f5", // water light
+  z: "#2f8fd4", // water dark
 };
 
 function pixelSpriteSVG(rows, palette, pixelSize) {
@@ -53,6 +58,71 @@ function pixelSpriteSVG(rows, palette, pixelSize) {
     `shape-rendering="crispEdges" style="image-rendering:pixelated;display:block">${rects}</svg>`
   );
 }
+
+/* Builds a blocky silhouette from overlapping rectangles: any cell inside
+   the union gets `outline` if it touches empty space, otherwise `fill`.
+   Used for shapes (like the clouds) that are easier to describe as a few
+   stacked rectangles than to hand-count pixel-by-pixel. */
+function rectUnionRows(rects, fill, outline) {
+  let w = 0, h = 0;
+  rects.forEach((r) => {
+    w = Math.max(w, r.x + r.w);
+    h = Math.max(h, r.y + r.h);
+  });
+  const grid = Array.from({ length: h }, () => Array(w).fill(false));
+  rects.forEach((r) => {
+    for (let y = r.y; y < r.y + r.h; y++) {
+      for (let x = r.x; x < r.x + r.w; x++) grid[y][x] = true;
+    }
+  });
+  const rows = [];
+  for (let y = 0; y < h; y++) {
+    let row = "";
+    for (let x = 0; x < w; x++) {
+      if (!grid[y][x]) { row += "."; continue; }
+      const edge =
+        !(grid[y - 1] && grid[y - 1][x]) ||
+        !(grid[y + 1] && grid[y + 1][x]) ||
+        !grid[y][x - 1] ||
+        !grid[y][x + 1];
+      row += edge ? outline : fill;
+    }
+    rows.push(row);
+  }
+  return rows;
+}
+
+const CLOUDS = {
+  small: rectUnionRows(
+    [
+      { x: 2, y: 3, w: 9, h: 3 },
+      { x: 0, y: 5, w: 13, h: 2 },
+      { x: 5, y: 1, w: 4, h: 3 },
+    ],
+    "w",
+    "k"
+  ),
+  medium: rectUnionRows(
+    [
+      { x: 2, y: 3, w: 12, h: 3 },
+      { x: 0, y: 6, w: 17, h: 2 },
+      { x: 4, y: 1, w: 5, h: 3 },
+      { x: 10, y: 2, w: 5, h: 3 },
+    ],
+    "w",
+    "k"
+  ),
+  large: rectUnionRows(
+    [
+      { x: 2, y: 4, w: 16, h: 3 },
+      { x: 0, y: 7, w: 21, h: 2 },
+      { x: 4, y: 1, w: 6, h: 4 },
+      { x: 11, y: 2, w: 7, h: 4 },
+    ],
+    "w",
+    "k"
+  ),
+};
 
 const SPRITES = {
   blobIdle: [
@@ -138,5 +208,30 @@ const SPRITES = {
     "rrrrrr.",
     ".rrrr..",
     "..rr...",
+  ],
+  leaf: [
+    "..kk...",
+    ".klvk..",
+    "kllvlk.",
+    "klvllk.",
+    ".kvllk.",
+    "..kllk.",
+    "...kk..",
+  ],
+  // golden "shiny" variant of the blob mascot — easter-egg only
+  blobShiny: [
+    ".....kkkkkk.....",
+    "...kkyyyyyykk...",
+    "..kyyyyyyyyyyk..",
+    ".kyuuyyyyyyuugk.",
+    ".kyuuyyyyyyuugk.",
+    "kyyyyykkkkyyyyyk",
+    "kyyyyykkkkyyyyyk",
+    "kyyyyykkkkyyyyyk",
+    "kwyyyyyyyyyyyywk",
+    ".kyyyyyyyyyyyk..",
+    "..kyuuuuuuuyk...",
+    "...kkyyyyykk....",
+    "....kkkkkkk.....",
   ],
 };
