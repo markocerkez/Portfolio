@@ -19,6 +19,21 @@
     return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
+  /* Storage can throw (privacy mode, blocked cookies, sandboxed iframes) —
+     every call site just wants "best effort", so centralize the try/catch. */
+  function storageGet(store, key) {
+    try {
+      return store.getItem(key);
+    } catch (e) {
+      return null;
+    }
+  }
+  function storageSet(store, key, value) {
+    try {
+      store.setItem(key, value);
+    } catch (e) {}
+  }
+
   /* Reveals `text` into `el` one character at a time, old-RPG style.
      Returns a promise that resolves once the full line is in. Instantly
      fills the text for anyone who prefers reduced motion. */
@@ -272,15 +287,13 @@
   let unlockedAchievements = new Set();
   function loadAchievements() {
     try {
-      unlockedAchievements = new Set(JSON.parse(localStorage.getItem("achievements") || "[]"));
+      unlockedAchievements = new Set(JSON.parse(storageGet(localStorage, "achievements") || "[]"));
     } catch (e) {
       unlockedAchievements = new Set();
     }
   }
   function saveAchievements() {
-    try {
-      localStorage.setItem("achievements", JSON.stringify([...unlockedAchievements]));
-    } catch (e) {}
+    storageSet(localStorage, "achievements", JSON.stringify([...unlockedAchievements]));
   }
   function renderAchievements() {
     const wrap = $("#badge-shelf");
@@ -439,18 +452,12 @@
     renderStars($("#ambient-stars"), 50);
     $("#hero-moon").innerHTML = sprite("moon", 5);
 
-    let saved = "day";
-    try {
-      saved = localStorage.getItem("theme") || "day";
-    } catch (e) {}
-    applyTheme(saved);
+    applyTheme(storageGet(localStorage, "theme") || "day");
 
     $("#theme-toggle").addEventListener("click", () => {
       const next = document.documentElement.getAttribute("data-theme") === "night" ? "day" : "night";
       applyTheme(next);
-      try {
-        localStorage.setItem("theme", next);
-      } catch (e) {}
+      storageSet(localStorage, "theme", next);
       playBlip(next === "night" ? 440 : 660);
     });
   }
@@ -499,30 +506,6 @@
     });
   }
 
-  /* ---------- XP bar: fills as you scroll through the page ---------- */
-  function wireXpBar() {
-    const fill = $("#xp-fill");
-    let ticking = false;
-    function update() {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      const pct = max > 0 ? Math.min(100, Math.max(0, (window.scrollY / max) * 100)) : 0;
-      fill.style.width = pct + "%";
-      ticking = false;
-    }
-    window.addEventListener(
-      "scroll",
-      () => {
-        if (!ticking) {
-          requestAnimationFrame(update);
-          ticking = true;
-        }
-      },
-      { passive: true }
-    );
-    window.addEventListener("resize", update);
-    update();
-  }
-
   /* ---------- custom pixel cursor ---------- */
   function wireCursor() {
     if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) return;
@@ -550,10 +533,7 @@
   function wireBoot() {
     const screen = $("#boot-screen");
     if (!screen) return;
-    let seen = false;
-    try {
-      seen = sessionStorage.getItem("booted") === "1";
-    } catch (e) {}
+    const seen = storageGet(sessionStorage, "booted") === "1";
     if (seen || prefersReducedMotion()) {
       screen.remove();
       return;
@@ -566,9 +546,7 @@
         pct = 100;
         fill.style.width = "100%";
         clearInterval(id);
-        try {
-          sessionStorage.setItem("booted", "1");
-        } catch (e) {}
+        storageSet(sessionStorage, "booted", "1");
         setTimeout(() => {
           screen.classList.add("is-hidden");
           setTimeout(() => screen.remove(), 500);
@@ -579,7 +557,9 @@
     }, 90);
   }
 
-  /* ---------- scroll compass: shows which section you're in ---------- */
+  /* ---------- scroll effects: XP bar fill + "current section" compass ----------
+     Both only need to know the scroll position, so they share one
+     rAF-gated listener instead of each registering their own. */
   const SECTION_LABELS = {
     about: "TRAINER CARD",
     education: "QUEST LOG",
@@ -588,12 +568,19 @@
     contact: "TALK TO NPC",
     patches: "PATCH NOTES",
   };
-  function wireCompass() {
-    const el = $("#compass");
-    const label = $("#compass-label");
+  function wireScrollEffects() {
+    const fill = $("#xp-fill");
+    const compass = $("#compass");
+    const compassLabel = $("#compass-label");
     const sections = $$("main section");
-    let ticking = false;
-    function update() {
+
+    function updateXpBar() {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = max > 0 ? Math.min(100, Math.max(0, (window.scrollY / max) * 100)) : 0;
+      fill.style.width = pct + "%";
+    }
+
+    function updateCompass() {
       const markerY = window.innerHeight * 0.35;
       let current = null;
       for (const sec of sections) {
@@ -604,11 +591,17 @@
         }
       }
       if (current && SECTION_LABELS[current]) {
-        label.textContent = SECTION_LABELS[current];
-        el.classList.add("is-visible");
+        compassLabel.textContent = SECTION_LABELS[current];
+        compass.classList.add("is-visible");
       } else {
-        el.classList.remove("is-visible");
+        compass.classList.remove("is-visible");
       }
+    }
+
+    let ticking = false;
+    function update() {
+      updateXpBar();
+      updateCompass();
       ticking = false;
     }
     window.addEventListener(
@@ -621,6 +614,7 @@
       },
       { passive: true }
     );
+    window.addEventListener("resize", updateXpBar);
     update();
   }
 
@@ -714,14 +708,31 @@
     });
   }
 
-  /* ---------- easter egg: Konami code / mascot taps → shiny + leaves ---------- */
-  function showToast(text) {
-    const toast = $("#egg-toast");
-    toast.textContent = text;
-    toast.classList.add("is-visible");
-    clearTimeout(showToast._t);
-    showToast._t = setTimeout(() => toast.classList.remove("is-visible"), 4200);
+  /* ---------- toast queue (achievements + easter egg share this) ---------- */
+  const toastQueue = [];
+  let toastBusy = false;
+  function showToast(text, duration) {
+    toastQueue.push({ text, duration: duration || 4200 });
+    if (!toastBusy) advanceToastQueue();
   }
+  function advanceToastQueue() {
+    const next = toastQueue.shift();
+    if (!next) {
+      toastBusy = false;
+      return;
+    }
+    toastBusy = true;
+    const toast = $("#egg-toast");
+    toast.textContent = next.text;
+    toast.classList.add("is-visible");
+    setTimeout(() => {
+      toast.classList.remove("is-visible");
+      // leave time for the fade-out transition before the next one appears
+      setTimeout(advanceToastQueue, 300);
+    }, next.duration);
+  }
+
+  /* ---------- easter egg: Konami code / mascot taps → shiny + leaves ---------- */
 
   function spawnLeaves(count) {
     const field = $("#leaf-field");
@@ -816,10 +827,9 @@
     wireEasterEgg();
     wireTheme();
     wireWeather();
-    wireXpBar();
+    wireScrollEffects();
     wireCursor();
     wireTabTitleTrick();
-    wireCompass();
     setTimeout(typeHeroText, 400);
   }
 

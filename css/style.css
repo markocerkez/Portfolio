@@ -208,6 +208,10 @@ img, svg { image-rendering: pixelated; }
   }
   .map-pin-pop { animation: none !important; opacity: 1; transform: scale(1); }
   .map-modal__tiles { transition: none; }
+  .boot-screen { display: none; }
+  .boot-screen__hint { animation: none; }
+  .badge.is-unlocked { animation: none; }
+  .toast { transition: none; }
 }
 
 /* ---------- topbar / quest menu ---------- */
@@ -958,6 +962,14 @@ img, svg { image-rendering: pixelated; }
   align-items: center;
   justify-content: center;
   transition: opacity 0.4s ease, visibility 0.4s ease;
+  /* Safety net: if script.js never runs (blocked, errors out), this
+     still lifts the boot screen on its own after a few seconds instead
+     of leaving the whole site covered forever. A no-op in the normal
+     case, since JS hides/removes it well before this fires. */
+  animation: bootFailsafe 0s 4s forwards;
+}
+@keyframes bootFailsafe {
+  to { opacity: 0; visibility: hidden; pointer-events: none; }
 }
 .boot-screen.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 .boot-screen__inner { display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 20px; }
@@ -1019,8 +1031,10 @@ img, svg { image-rendering: pixelated; }
 }
 .badge-shelf {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 14px;
+  /* 7 achievements at this width keeps them on one row on a typical
+     desktop viewport instead of stranding the last one alone. */
+  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+  gap: 12px;
   margin-bottom: 36px;
 }
 .badge {
@@ -1050,12 +1064,6 @@ img, svg { image-rendering: pixelated; }
   0% { transform: scale(0.7); opacity: 0; }
   70% { transform: scale(1.12); opacity: 1; }
   100% { transform: scale(1); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .boot-screen { display: none; }
-  .boot-screen__hint { animation: none; }
-  .badge.is-unlocked { animation: none; }
 }
 
 @media (max-width: 480px) {

@@ -31,7 +31,7 @@
 </head>
 <body>
 
-<div class="boot-screen" id="boot-screen">
+<div class="boot-screen" id="boot-screen" aria-hidden="true">
   <div class="boot-screen__inner">
     <p class="boot-screen__title">MARKO<span>CERKEZ</span>.CH</p>
     <div class="boot-bar"><div class="boot-bar__fill" id="boot-fill"></div></div>
@@ -39,7 +39,7 @@
   </div>
 </div>
 
-<div class="compass" id="compass"><span id="compass-label"></span></div>
+<div class="compass" id="compass" aria-hidden="true"><span id="compass-label"></span></div>
 
 <div class="ambient-bg" id="ambient-bg" aria-hidden="true">
   <div class="stars" id="ambient-stars"></div>
@@ -166,7 +166,7 @@
 
 <div class="leaf-field" id="leaf-field" aria-hidden="true"></div>
 <div class="weather-field" id="weather-field" aria-hidden="true"></div>
-<div class="toast" id="egg-toast" aria-hidden="true"></div>
+<div class="toast" id="egg-toast" role="status" aria-live="polite"></div>
 
 <script src="js/sprites.js"></script>
 <script src="js/content.js"></script>
