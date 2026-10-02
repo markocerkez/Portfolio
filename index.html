@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Marko Cerkez // Portfolio</title>
+<meta name="description" content="Marko Cerkez — portfolio quest log: education, work and projects, retro-game style." />
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="crt-overlay" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__name">MARKO<span class="topbar__name-accent">CERKEZ</span>.CH</div>
+  <nav class="menu" aria-label="Main menu">
+    <button data-target="about">TRAINER</button>
+    <button data-target="education">QUESTS</button>
+    <button data-target="work">MAP</button>
+    <button data-target="projects">ITEMS</button>
+    <button data-target="contact">TALK</button>
+  </nav>
+  <button id="sound-toggle" class="icon-btn" title="Toggle sound" aria-pressed="false">SFX: OFF</button>
+</header>
+
+<main id="app">
+
+  <section id="hero" class="hero">
+    <div class="hero__sky">
+      <div class="cloud cloud--1"></div>
+      <div class="cloud cloud--2"></div>
+      <div class="cloud cloud--3"></div>
+    </div>
+    <div class="hero__content">
+      <div class="hero__mascot" id="hero-mascot"></div>
+      <h1 class="hero__title" id="hero-name">MARKO CERKEZ</h1>
+      <p class="hero__role" id="hero-role">SOFTWARE ENGINEER // JAVA INSTRUCTOR</p>
+      <div class="dialog-box" id="hero-dialog">
+        <p id="hero-tagline" class="dialog-box__tagline"></p>
+        <div id="hero-intro-lines"></div>
+        <span class="dialog-box__cursor">▶</span>
+      </div>
+      <button class="press-start" id="scroll-start">PRESS START ▾</button>
+    </div>
+    <div class="hero__ground" id="hero-ground"></div>
+  </section>
+
+  <section id="about" class="panel">
+    <h2 class="panel__title"><span class="panel__title-badge">01</span> TRAINER CARD</h2>
+    <div class="trainer-card">
+      <div class="trainer-card__portrait" id="trainer-portrait"></div>
+      <div class="trainer-card__info">
+        <div class="trainer-card__row">
+          <span class="trainer-card__label">NAME</span>
+          <span class="trainer-card__value" id="trainer-name"></span>
+        </div>
+        <div class="trainer-card__row">
+          <span class="trainer-card__label">CLASS</span>
+          <span class="trainer-card__value" id="trainer-class"></span>
+        </div>
+        <div class="trainer-card__row">
+          <span class="trainer-card__label">FROM</span>
+          <span class="trainer-card__value" id="trainer-location"></span>
+        </div>
+        <p class="trainer-card__bio" id="trainer-bio"></p>
+      </div>
+      <div class="trainer-card__stats" id="trainer-stats"></div>
+    </div>
+  </section>
+
+  <section id="education" class="panel panel--alt">
+    <h2 class="panel__title"><span class="panel__title-badge">02</span> QUEST LOG</h2>
+    <div class="quest-log" id="quest-log"></div>
+  </section>
+
+  <section id="work" class="panel">
+    <h2 class="panel__title"><span class="panel__title-badge">03</span> WORLD MAP</h2>
+    <div class="world-map" id="world-map"></div>
+  </section>
+
+  <section id="projects" class="panel panel--alt">
+    <h2 class="panel__title"><span class="panel__title-badge">04</span> ITEM BAG</h2>
+    <p class="panel__hint">Hover or tap a chest to open it.</p>
+    <div class="item-bag" id="item-bag"></div>
+  </section>
+
+  <section id="contact" class="panel contact">
+    <h2 class="panel__title"><span class="panel__title-badge">05</span> TALK TO NPC</h2>
+    <div class="npc-scene">
+      <div class="npc-scene__mascot" id="npc-mascot"></div>
+      <div class="dialog-box dialog-box--wide">
+        <p id="contact-message"></p>
+        <div class="contact-links" id="contact-links"></div>
+        <span class="dialog-box__cursor">▶</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p id="footer-text"></p>
+  <button class="icon-btn" id="back-to-top">▲ TOP</button>
+</footer>
+
+<script src="js/sprites.js"></script>
+<script src="js/content.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>
