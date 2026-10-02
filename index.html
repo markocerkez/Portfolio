@@ -60,9 +60,9 @@
       <button data-target="contact">TALK</button>
       <button data-target="patches">PATCHES</button>
     </nav>
-    <button id="map-toggle" class="icon-btn" title="Open the overworld map">🗺 MAP</button>
-    <button id="weather-toggle" class="icon-btn" title="Cycle the weather">☀ CLEAR</button>
-    <button id="theme-toggle" class="icon-btn" title="Toggle day / night">🌙 NIGHT</button>
+    <button id="map-toggle" class="icon-btn" title="Open the overworld map"><span class="icon-btn__icon" id="map-toggle-icon"></span> MAP</button>
+    <button id="weather-toggle" class="icon-btn" title="Cycle the weather"><span class="icon-btn__icon" id="weather-icon"></span> <span id="weather-label">CLEAR</span></button>
+    <button id="theme-toggle" class="icon-btn" title="Toggle day / night"><span class="icon-btn__icon" id="theme-icon"></span> <span id="theme-label">NIGHT</span></button>
     <button id="sound-toggle" class="icon-btn" title="Toggle sound" aria-pressed="false">SFX: OFF</button>
   </div>
   <div class="xp-bar" id="xp-bar"><div class="xp-bar__fill" id="xp-fill"></div></div>
@@ -161,7 +161,7 @@
 <div class="map-modal" id="map-modal" aria-hidden="true">
   <div class="map-modal__panel" role="dialog" aria-label="Overworld map">
     <div class="map-modal__header">
-      <span>🗺 OVERWORLD MAP</span>
+      <span><span class="icon-btn__icon" id="map-modal-icon"></span> OVERWORLD MAP</span>
       <button id="map-close" class="icon-btn">✕ CLOSE</button>
     </div>
     <div class="map-modal__stage" id="map-stage"></div>

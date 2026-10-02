@@ -94,6 +94,19 @@ function rectUnionRows(rects, fill, outline) {
   return rows;
 }
 
+/* Overwrites specific [x, y] cells of a sprite (built by rectUnionRows or
+   hand-written) with a different character — used to add small accents
+   (a spine line, a flap crease, a latch) onto a plain rectangular base
+   without hand-counting a whole new grid. Returns new rows; doesn't
+   mutate the input. */
+function withPixels(rows, points, ch) {
+  const grid = rows.map((r) => r.split(""));
+  points.forEach(([x, y]) => {
+    if (grid[y] && x >= 0 && x < grid[y].length) grid[y][x] = ch;
+  });
+  return grid.map((r) => r.join(""));
+}
+
 const CLOUDS = {
   small: rectUnionRows(
     [
@@ -141,6 +154,90 @@ const BUTTERFLY = [
     (row, i) => row.split("").reverse().join("") + "k" + row
   ),
 ];
+
+/* Small UI icons — replace every emoji used in buttons/labels/links so
+   nothing on the page falls back to the platform's color emoji font. */
+const ICON_SUN = rectUnionRows(
+  [
+    { x: 2, y: 0, w: 5, h: 2 },
+    { x: 0, y: 2, w: 9, h: 5 },
+    { x: 2, y: 7, w: 5, h: 2 },
+  ],
+  "y",
+  "k"
+);
+const ICON_SCROLL = rectUnionRows(
+  [
+    { x: 1, y: 0, w: 9, h: 1 },
+    { x: 0, y: 1, w: 11, h: 5 },
+    { x: 1, y: 6, w: 9, h: 1 },
+  ],
+  "o",
+  "k"
+);
+const ICON_BRIEFCASE = withPixels(
+  rectUnionRows(
+    [
+      { x: 3, y: 0, w: 3, h: 1 },
+      { x: 0, y: 2, w: 9, h: 5 },
+    ],
+    "n",
+    "k"
+  ),
+  [
+    [3, 3], [4, 3], [5, 3],
+    [3, 4], [4, 4], [5, 4],
+  ],
+  "y"
+);
+const ICON_BOOK = withPixels(
+  rectUnionRows([{ x: 0, y: 0, w: 9, h: 7 }], "z", "k"),
+  [[4, 1], [4, 2], [4, 3], [4, 4], [4, 5]],
+  "k"
+);
+const ICON_PIN = rectUnionRows(
+  [
+    { x: 2, y: 0, w: 1, h: 1 },
+    { x: 1, y: 1, w: 3, h: 1 },
+    { x: 0, y: 2, w: 5, h: 1 },
+    { x: 1, y: 3, w: 3, h: 1 },
+    { x: 2, y: 4, w: 1, h: 1 },
+  ],
+  "w",
+  "k"
+);
+const ICON_ENVELOPE = withPixels(
+  rectUnionRows([{ x: 0, y: 0, w: 11, h: 7 }], "w", "k"),
+  [
+    [1, 1], [2, 2], [3, 2], [4, 3], [5, 3],
+    [9, 1], [8, 2], [7, 2], [6, 3],
+  ],
+  "k"
+);
+const ICON_RAIN_CLOUD = [
+  ...rectUnionRows(
+    [
+      { x: 1, y: 1, w: 7, h: 2 },
+      { x: 0, y: 3, w: 9, h: 2 },
+    ],
+    "w",
+    "k"
+  ),
+  "..k...k..",
+  "..a...a..",
+];
+const ICON_SNOWFLAKE = (() => {
+  const n = 7, mid = 3;
+  const grid = Array.from({ length: n }, () => Array(n).fill("."));
+  for (let i = 0; i < n; i++) {
+    grid[mid][i] = "a";
+    grid[i][mid] = "a";
+    grid[i][i] = "a";
+    grid[i][n - 1 - i] = "a";
+  }
+  grid[mid][mid] = "w";
+  return grid.map((r) => r.join(""));
+})();
 
 const SPRITES = {
   blobIdle: [
@@ -237,6 +334,14 @@ const SPRITES = {
     "...kk..",
   ],
   butterfly: BUTTERFLY,
+  iconSun: ICON_SUN,
+  iconScroll: ICON_SCROLL,
+  iconBriefcase: ICON_BRIEFCASE,
+  iconBook: ICON_BOOK,
+  iconPin: ICON_PIN,
+  iconEnvelope: ICON_ENVELOPE,
+  iconRainCloud: ICON_RAIN_CLOUD,
+  iconSnowflake: ICON_SNOWFLAKE,
   moon: [
     "..kkkk..",
     ".kwwwwk.",

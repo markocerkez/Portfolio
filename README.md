@@ -21,7 +21,7 @@ Things worth knowing while filling it in:
 - `trainer.photo`: set to a path like `"assets/avatar.png"` to show a real
   photo instead of the pixel mascot (drop the image into `assets/`).
 - `trainer.resumeUrl`: drop your CV as `assets/resume.pdf` (or wherever)
-  and point this at it to show a "📜 Get Scroll of Resume" download
+  and point this at it to show a "Get Scroll of Resume" download
   button. Leave it as `""` to hide the button — it's a placeholder path
   right now and will 404 until you add the file.
 - `patchNotes`: a changelog for the site itself, shown in its own
@@ -30,13 +30,13 @@ Things worth knowing while filling it in:
 
 ## Fun extras
 
-- The **🗺 MAP** button in the top bar opens a small overworld-style map
+- The **MAP** button in the top bar opens a small overworld-style map
   (grass, path, a pond, trees) with numbered flags that jump you to each
   section — closes with the ✕ button, a click outside, or Esc.
-- The **🌙 NIGHT / ☀ DAY** button swaps the sky, ground and ambient layer
+- The **NIGHT / DAY** button swaps the sky, ground and ambient layer
   to a night palette with twinkling stars and a moon. Remembered across
   visits (`localStorage`).
-- The **☀ CLEAR / 🌧 RAIN / ❄ SNOW** button cycles light weather effects
+- The **CLEAR / RAIN / SNOW** button cycles light weather effects
   over the whole page.
 - Dialogue boxes (hero intro, NPC chat) type themselves out letter by
   letter, old-RPG style.
@@ -50,7 +50,7 @@ Things worth knowing while filling it in:
 - A brief pixel "LOADING..." boot screen plays on your first visit each
   browser session (skipped after that, and skipped entirely under
   reduced motion).
-- Switch away from the tab and the title changes to "👋 Come back!" —
+- Switch away from the tab and the title changes to "Come back!" —
   reverts the moment you switch back.
 - A small compass in the bottom-left corner names whichever section is
   currently in view as you scroll.

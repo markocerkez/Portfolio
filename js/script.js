@@ -154,7 +154,7 @@
 
     const resumeWrap = $("#trainer-resume");
     resumeWrap.innerHTML = t.resumeUrl
-      ? `<a class="key-item" href="${t.resumeUrl}" download>📜 GET SCROLL OF RESUME</a>`
+      ? `<a class="key-item" href="${t.resumeUrl}" download><span class="icon-btn__icon">${sprite("iconScroll", 3)}</span> GET SCROLL OF RESUME</a>`
       : "";
 
     const statsWrap = $("#trainer-stats");
@@ -193,12 +193,12 @@
   function renderWork() {
     const wrap = $("#world-map");
     wrap.innerHTML = "";
-    const icons = { briefcase: "💼", book: "📘" };
+    const icons = { briefcase: "iconBriefcase", book: "iconBook" };
     SITE_DATA.work.forEach((job) => {
       const div = document.createElement("div");
       div.className = "location";
       div.innerHTML = `
-        <div class="location__pin"><span>${icons[job.icon] || "📍"}</span></div>
+        <div class="location__pin">${sprite(icons[job.icon] || "iconPin", 2.5)}</div>
         <p class="location__role">${job.role}</p>
         <p class="location__company">${job.company}</p>
         <p class="location__period">${job.period}</p>
@@ -250,7 +250,7 @@
     const links = $("#contact-links");
     links.innerHTML = "";
     const c = SITE_DATA.contact;
-    if (c.email) links.innerHTML += `<a href="mailto:${c.email}">✉ EMAIL</a>`;
+    if (c.email) links.innerHTML += `<a href="mailto:${c.email}"><span class="icon-btn__icon">${sprite("iconEnvelope", 2)}</span> EMAIL</a>`;
     if (c.github) links.innerHTML += `<a href="${c.github}" target="_blank" rel="noopener">GITHUB</a>`;
     if (c.linkedin) links.innerHTML += `<a href="${c.linkedin}" target="_blank" rel="noopener">LINKEDIN</a>`;
     $("#footer-text").textContent = SITE_DATA.footer.text;
@@ -505,11 +505,13 @@
   function applyTheme(theme) {
     if (theme === "night") {
       document.documentElement.setAttribute("data-theme", "night");
-      $("#theme-toggle").textContent = "☀ DAY";
+      $("#theme-icon").innerHTML = sprite("iconSun", 2);
+      $("#theme-label").textContent = "DAY";
       unlockAchievement("night_owl");
     } else {
       document.documentElement.removeAttribute("data-theme");
-      $("#theme-toggle").textContent = "🌙 NIGHT";
+      $("#theme-icon").innerHTML = sprite("moon", 2);
+      $("#theme-label").textContent = "NIGHT";
     }
   }
 
@@ -531,15 +533,22 @@
   /* ---------- weather ---------- */
   function wireWeather() {
     const states = ["clear", "rain", "snow"];
-    const labels = { clear: "☀ CLEAR", rain: "🌧 RAIN", snow: "❄ SNOW" };
+    const meta = {
+      clear: { icon: "iconSun", label: "CLEAR" },
+      rain: { icon: "iconRainCloud", label: "RAIN" },
+      snow: { icon: "iconSnowflake", label: "SNOW" },
+    };
     let idx = 0;
     const tried = new Set();
     const field = $("#weather-field");
     const btn = $("#weather-toggle");
+    const icon = $("#weather-icon");
+    const label = $("#weather-label");
 
     function renderWeather(state) {
       field.innerHTML = "";
-      btn.textContent = labels[state];
+      icon.innerHTML = sprite(meta[state].icon, 2);
+      label.textContent = meta[state].label;
       if (state !== "clear") {
         tried.add(state);
         if (tried.has("rain") && tried.has("snow")) unlockAchievement("weather_watcher");
@@ -570,6 +579,8 @@
       renderWeather(states[idx]);
       playBlip(520 + idx * 80);
     });
+
+    icon.innerHTML = sprite(meta.clear.icon, 2);
   }
 
   /* ---------- custom pixel cursor ---------- */
@@ -591,7 +602,9 @@
   function wireTabTitleTrick() {
     const original = document.title;
     document.addEventListener("visibilitychange", () => {
-      document.title = document.hidden ? "👋 Come back!" : original;
+      // A browser tab title is plain text — there's no way to show a
+      // pixel icon here, so this stays emoji-free text only.
+      document.title = document.hidden ? "Come back!" : original;
     });
   }
 
@@ -764,6 +777,8 @@
   }
   function wireMap() {
     renderMap();
+    $("#map-toggle-icon").innerHTML = sprite("badgeMap", 2);
+    $("#map-modal-icon").innerHTML = sprite("badgeMap", 2);
     $("#map-toggle").addEventListener("click", openMap);
     $("#map-close").addEventListener("click", closeMap);
     $("#map-modal").addEventListener("click", (e) => {

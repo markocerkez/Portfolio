@@ -272,6 +272,10 @@ img, svg { image-rendering: pixelated; }
 .menu button:active { transform: translateY(1px); box-shadow: none; }
 
 .icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   background: var(--accent);
   color: var(--ink);
   border: 2px solid var(--ink);
@@ -282,6 +286,13 @@ img, svg { image-rendering: pixelated; }
 }
 .icon-btn:hover { background: var(--accent-2); }
 .icon-btn:active { transform: translateY(1px); box-shadow: none; }
+
+.icon-btn__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-btn__icon svg { width: 16px; height: auto; }
 
 .xp-bar {
   position: absolute;
@@ -624,7 +635,7 @@ img, svg { image-rendering: pixelated; }
   transform: rotate(-45deg);
   display: flex; align-items: center; justify-content: center;
 }
-.location__pin span { transform: rotate(45deg); font-size: 16px; }
+.location__pin svg { transform: rotate(45deg); width: 20px; height: auto; }
 .location__role { font-size: 21px; font-weight: bold; margin: 0; }
 .location__company { font-family: var(--font-head); font-size: 11px; color: var(--purple); margin: 4px 0; }
 .location__period { font-size: 15px; color: #4c5a30; margin: 0 0 10px; }
@@ -741,6 +752,9 @@ img, svg { image-rendering: pixelated; }
   margin-top: 10px;
 }
 .contact-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-family: var(--font-head);
   font-size: 11px;
   background: var(--purple);
