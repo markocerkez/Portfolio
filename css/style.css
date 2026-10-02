@@ -228,6 +228,19 @@ img, svg { image-rendering: pixelated; }
   flex-wrap: wrap;
 }
 
+.topbar__bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar__controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .topbar__name {
   font-family: var(--font-head);
   color: var(--paper);
@@ -235,6 +248,8 @@ img, svg { image-rendering: pixelated; }
   white-space: nowrap;
 }
 .topbar__name-accent { color: var(--accent-2); }
+
+.menu-toggle { display: none; }
 
 .menu {
   display: flex;
@@ -1073,8 +1088,42 @@ img, svg { image-rendering: pixelated; }
   100% { transform: scale(1); }
 }
 
+/* ---------- collapsible mobile menu ---------- */
+@media (max-width: 760px) {
+  .topbar { flex-direction: column; align-items: stretch; gap: 0; }
+  .topbar__bar { justify-content: space-between; }
+  .menu-toggle { display: inline-flex; }
+
+  .topbar__controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-top: 0;
+    transition: max-height 0.3s ease, opacity 0.25s ease, margin-top 0.3s ease;
+  }
+  .topbar__controls.is-open {
+    max-height: 600px;
+    opacity: 1;
+    margin-top: 10px;
+  }
+  .topbar__controls .menu {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .topbar__controls .menu button,
+  .topbar__controls > .icon-btn {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .topbar__controls { transition: none; }
+}
+
 @media (max-width: 480px) {
-  .topbar { flex-direction: column; gap: 8px; }
   body { font-size: 18px; }
   .compass { left: 8px; bottom: 8px; font-size: 8px; padding: 6px 9px; }
 }

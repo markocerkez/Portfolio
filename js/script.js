@@ -14,6 +14,9 @@
   }
 
   let shinyMode = false;
+  // Reassigned by wireMenuToggle(); lets wireNav() collapse the mobile
+  // drawer before scrolling (see wireNav for why that ordering matters).
+  let closeMobileMenuInstant = function () {};
 
   function prefersReducedMotion() {
     return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -340,6 +343,12 @@
       btn.addEventListener("click", () => {
         const id = btn.dataset.target || "about";
         const el = document.getElementById(id);
+        // Collapse the mobile drawer (if open) *before* scrolling, not
+        // after: closing it animated at the same time as the scroll
+        // shrinks the sticky header mid-animation and the scroll
+        // overshoots the target. Closing it first means scrollIntoView
+        // measures the already-collapsed layout.
+        closeMobileMenuInstant();
         if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
         playBlip(520);
       });
@@ -348,6 +357,57 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
       playBlip(520);
     });
+  }
+
+  /* ---------- collapsible mobile menu ---------- */
+  function wireMenuToggle() {
+    const btn = $("#menu-toggle");
+    const controls = $("#topbar-controls");
+    if (!btn || !controls) return;
+    // Must match the CSS breakpoint below — the menu only actually
+    // collapses (and should only go inert) under this width. Above it,
+    // .topbar__controls is always fully visible regardless of the
+    // is-open class, so it must never be inert there.
+    const mobileQuery = window.matchMedia("(max-width: 760px)");
+
+    function syncInert() {
+      controls.inert = mobileQuery.matches && !controls.classList.contains("is-open");
+    }
+
+    function setOpen(open) {
+      controls.classList.toggle("is-open", open);
+      btn.setAttribute("aria-expanded", String(open));
+      btn.textContent = open ? "✕ CLOSE" : "☰ MENU";
+      syncInert();
+    }
+
+    btn.addEventListener("click", () => {
+      const open = !controls.classList.contains("is-open");
+      setOpen(open);
+      playBlip(open ? 660 : 440);
+    });
+
+    // picking anything inside closes the menu again — it's meant to be a
+    // quick drawer on a phone, not a panel you leave open over the page.
+    // (wireNav's own click handler already closes it instantly before
+    // scrolling for nav buttons; this animated path covers the other
+    // controls — map/weather/theme/sound — which don't scroll.)
+    controls.addEventListener("click", (e) => {
+      if (e.target.closest("button")) setOpen(false);
+    });
+
+    closeMobileMenuInstant = function () {
+      if (!controls.classList.contains("is-open")) return;
+      controls.style.transition = "none";
+      setOpen(false);
+      void controls.offsetHeight; // force reflow before re-enabling the transition
+      requestAnimationFrame(() => {
+        controls.style.transition = "";
+      });
+    };
+
+    mobileQuery.addEventListener("change", syncInert);
+    syncInert();
   }
 
   /* ---------- reveal-on-scroll ---------- */
@@ -826,6 +886,7 @@
     renderContact();
     renderPatchNotes();
     wireNav();
+    wireMenuToggle();
     wireReveal();
     wireBlink();
     wireSound();

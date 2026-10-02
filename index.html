@@ -47,19 +47,24 @@
 <div class="crt-overlay" aria-hidden="true"></div>
 
 <header class="topbar">
-  <div class="topbar__name">MARKO<span class="topbar__name-accent">CERKEZ</span>.CH</div>
-  <nav class="menu" aria-label="Main menu">
-    <button data-target="about">TRAINER</button>
-    <button data-target="education">QUESTS</button>
-    <button data-target="work">WORK</button>
-    <button data-target="projects">ITEMS</button>
-    <button data-target="contact">TALK</button>
-    <button data-target="patches">PATCHES</button>
-  </nav>
-  <button id="map-toggle" class="icon-btn" title="Open the overworld map">🗺 MAP</button>
-  <button id="weather-toggle" class="icon-btn" title="Cycle the weather">☀ CLEAR</button>
-  <button id="theme-toggle" class="icon-btn" title="Toggle day / night">🌙 NIGHT</button>
-  <button id="sound-toggle" class="icon-btn" title="Toggle sound" aria-pressed="false">SFX: OFF</button>
+  <div class="topbar__bar">
+    <div class="topbar__name">MARKO<span class="topbar__name-accent">CERKEZ</span>.CH</div>
+    <button id="menu-toggle" class="icon-btn menu-toggle" aria-expanded="false" aria-controls="topbar-controls">☰ MENU</button>
+  </div>
+  <div class="topbar__controls" id="topbar-controls">
+    <nav class="menu" aria-label="Main menu">
+      <button data-target="about">TRAINER</button>
+      <button data-target="education">QUESTS</button>
+      <button data-target="work">WORK</button>
+      <button data-target="projects">ITEMS</button>
+      <button data-target="contact">TALK</button>
+      <button data-target="patches">PATCHES</button>
+    </nav>
+    <button id="map-toggle" class="icon-btn" title="Open the overworld map">🗺 MAP</button>
+    <button id="weather-toggle" class="icon-btn" title="Cycle the weather">☀ CLEAR</button>
+    <button id="theme-toggle" class="icon-btn" title="Toggle day / night">🌙 NIGHT</button>
+    <button id="sound-toggle" class="icon-btn" title="Toggle sound" aria-pressed="false">SFX: OFF</button>
+  </div>
   <div class="xp-bar" id="xp-bar"><div class="xp-bar__fill" id="xp-fill"></div></div>
 </header>
 
