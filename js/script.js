@@ -195,7 +195,8 @@
     wrap.innerHTML = "";
     const closed = sprite("chestClosed", 4);
     const open = sprite("chestOpen", 4);
-    SITE_DATA.projects.forEach((p) => {
+    const opened = new Set();
+    SITE_DATA.projects.forEach((p, i) => {
       const div = document.createElement("div");
       div.className = "item";
       div.tabIndex = 0;
@@ -212,7 +213,15 @@
         <div class="item__tech">${techHtml}</div>
         <p class="item__desc">${p.description}</p>
         ${linkHtml}`;
-      div.addEventListener("mouseenter", () => playBlip(880));
+      const markOpened = () => {
+        opened.add(i);
+        if (opened.size >= SITE_DATA.projects.length) unlockAchievement("treasure_hunter");
+      };
+      div.addEventListener("mouseenter", () => {
+        playBlip(880);
+        markOpened();
+      });
+      div.addEventListener("focus", markOpened);
       wrap.appendChild(div);
     });
   }
@@ -250,6 +259,62 @@
     });
   }
 
+  /* ---------- achievements ---------- */
+  const ACHIEVEMENTS = [
+    { id: "explorer", title: "World Explorer", desc: "Visit every section of the site.", icon: "🧭" },
+    { id: "treasure_hunter", title: "Treasure Hunter", desc: "Open every chest in the Item Bag.", icon: "📦" },
+    { id: "cartographer", title: "Cartographer", desc: "Open the overworld map.", icon: "🗺️" },
+    { id: "weather_watcher", title: "Weather Watcher", desc: "Try every kind of weather.", icon: "🌦️" },
+    { id: "night_owl", title: "Night Owl", desc: "Switch to night mode.", icon: "🌙" },
+    { id: "secret_grove", title: "Secret Grove", desc: "Find the hidden easter egg.", icon: "🍃" },
+    { id: "completionist", title: "Completionist", desc: "Unlock every other achievement.", icon: "🏆" },
+  ];
+  let unlockedAchievements = new Set();
+  function loadAchievements() {
+    try {
+      unlockedAchievements = new Set(JSON.parse(localStorage.getItem("achievements") || "[]"));
+    } catch (e) {
+      unlockedAchievements = new Set();
+    }
+  }
+  function saveAchievements() {
+    try {
+      localStorage.setItem("achievements", JSON.stringify([...unlockedAchievements]));
+    } catch (e) {}
+  }
+  function renderAchievements() {
+    const wrap = $("#badge-shelf");
+    if (!wrap) return;
+    wrap.innerHTML = "";
+    ACHIEVEMENTS.forEach((a) => {
+      const unlocked = unlockedAchievements.has(a.id);
+      const div = document.createElement("div");
+      div.className = "badge " + (unlocked ? "is-unlocked" : "is-locked");
+      div.innerHTML = `
+        <span class="badge__icon">${unlocked ? a.icon : "❓"}</span>
+        <span class="badge__title">${unlocked ? a.title : "???"}</span>
+        <p class="badge__desc">${unlocked ? a.desc : "Hidden until unlocked."}</p>`;
+      wrap.appendChild(div);
+    });
+  }
+  function unlockAchievement(id, opts) {
+    opts = opts || {};
+    if (unlockedAchievements.has(id)) return;
+    unlockedAchievements.add(id);
+    saveAchievements();
+    const a = ACHIEVEMENTS.find((x) => x.id === id);
+    if (a && !opts.silent) {
+      showToast(`${a.icon} ACHIEVEMENT UNLOCKED\n${a.title} — ${a.desc}`);
+      playBlip(988);
+      setTimeout(() => playBlip(1318), 120);
+    }
+    renderAchievements();
+    const others = ACHIEVEMENTS.filter((x) => x.id !== "completionist");
+    if (id !== "completionist" && others.every((x) => unlockedAchievements.has(x.id))) {
+      setTimeout(() => unlockAchievement("completionist"), 1200);
+    }
+  }
+
   /* ---------- menu + scroll ---------- */
   function wireNav() {
     $$(".menu button, #scroll-start").forEach((btn) => {
@@ -270,6 +335,8 @@
   function wireReveal() {
     const panels = $$(".panel");
     const statFills = $$(".stat-bar__fill");
+    const visited = new Set();
+    const explorerTargets = ["about", "education", "work", "projects", "contact"];
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -282,6 +349,10 @@
             }
             if (entry.target.id === "contact") {
               typeContactText();
+            }
+            visited.add(entry.target.id);
+            if (explorerTargets.every((id) => visited.has(id))) {
+              unlockAchievement("explorer");
             }
           }
         });
@@ -356,6 +427,7 @@
     if (theme === "night") {
       document.documentElement.setAttribute("data-theme", "night");
       $("#theme-toggle").textContent = "☀ DAY";
+      unlockAchievement("night_owl");
     } else {
       document.documentElement.removeAttribute("data-theme");
       $("#theme-toggle").textContent = "🌙 NIGHT";
@@ -388,12 +460,17 @@
     const states = ["clear", "rain", "snow"];
     const labels = { clear: "☀ CLEAR", rain: "🌧 RAIN", snow: "❄ SNOW" };
     let idx = 0;
+    const tried = new Set();
     const field = $("#weather-field");
     const btn = $("#weather-toggle");
 
     function renderWeather(state) {
       field.innerHTML = "";
       btn.textContent = labels[state];
+      if (state !== "clear") {
+        tried.add(state);
+        if (tried.has("rain") && tried.has("snow")) unlockAchievement("weather_watcher");
+      }
       if (prefersReducedMotion() || state === "clear") return;
       const count = state === "rain" ? 44 : 26;
       for (let i = 0; i < count; i++) {
@@ -459,6 +536,92 @@
       }
     `;
     document.head.appendChild(style);
+  }
+
+  /* ---------- tab-title easter egg ---------- */
+  function wireTabTitleTrick() {
+    const original = document.title;
+    document.addEventListener("visibilitychange", () => {
+      document.title = document.hidden ? "👋 Come back!" : original;
+    });
+  }
+
+  /* ---------- boot screen ---------- */
+  function wireBoot() {
+    const screen = $("#boot-screen");
+    if (!screen) return;
+    let seen = false;
+    try {
+      seen = sessionStorage.getItem("booted") === "1";
+    } catch (e) {}
+    if (seen || prefersReducedMotion()) {
+      screen.remove();
+      return;
+    }
+    const fill = $("#boot-fill");
+    let pct = 0;
+    const id = setInterval(() => {
+      pct += 8 + Math.random() * 12;
+      if (pct >= 100) {
+        pct = 100;
+        fill.style.width = "100%";
+        clearInterval(id);
+        try {
+          sessionStorage.setItem("booted", "1");
+        } catch (e) {}
+        setTimeout(() => {
+          screen.classList.add("is-hidden");
+          setTimeout(() => screen.remove(), 500);
+        }, 250);
+        return;
+      }
+      fill.style.width = pct + "%";
+    }, 90);
+  }
+
+  /* ---------- scroll compass: shows which section you're in ---------- */
+  const SECTION_LABELS = {
+    about: "TRAINER CARD",
+    education: "QUEST LOG",
+    work: "WORLD MAP",
+    projects: "ITEM BAG",
+    contact: "TALK TO NPC",
+    patches: "PATCH NOTES",
+  };
+  function wireCompass() {
+    const el = $("#compass");
+    const label = $("#compass-label");
+    const sections = $$("main section");
+    let ticking = false;
+    function update() {
+      const markerY = window.innerHeight * 0.35;
+      let current = null;
+      for (const sec of sections) {
+        const r = sec.getBoundingClientRect();
+        if (r.top <= markerY && r.bottom >= markerY) {
+          current = sec.id;
+          break;
+        }
+      }
+      if (current && SECTION_LABELS[current]) {
+        label.textContent = SECTION_LABELS[current];
+        el.classList.add("is-visible");
+      } else {
+        el.classList.remove("is-visible");
+      }
+      ticking = false;
+    }
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!ticking) {
+          requestAnimationFrame(update);
+          ticking = true;
+        }
+      },
+      { passive: true }
+    );
+    update();
   }
 
   /* ---------- overworld mini-map ---------- */
@@ -533,6 +696,7 @@
     $("#map-modal").classList.add("is-open");
     $("#map-modal").setAttribute("aria-hidden", "false");
     playBlip(740);
+    unlockAchievement("cartographer");
   }
   function closeMap() {
     $("#map-modal").classList.remove("is-open");
@@ -585,6 +749,7 @@
     });
     spawnLeaves(18);
     showToast("🍃 ACHIEVEMENT UNLOCKED\nSecret Grove Found! A shiny blob rustles by.");
+    unlockAchievement("secret_grove", { silent: true });
     playBlip(988);
     setTimeout(() => playBlip(1318), 120);
     clearTimeout(triggerEasterEgg._t);
@@ -632,6 +797,9 @@
   }
 
   function init() {
+    wireBoot();
+    loadAchievements();
+    renderAchievements();
     renderAmbient();
     renderHero();
     renderTrainer();
@@ -650,6 +818,8 @@
     wireWeather();
     wireXpBar();
     wireCursor();
+    wireTabTitleTrick();
+    wireCompass();
     setTimeout(typeHeroText, 400);
   }
 

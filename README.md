@@ -47,8 +47,34 @@ Things worth knowing while filling it in:
   (↑ ↑ ↓ ↓ ← → ← → B A) anywhere on the page, or tap the mascot blob 7
   times quickly — a "shiny" golden blob appears and leaves rain down for
   a few seconds. Pure fun, no effect on content.
-- All motion (ambient background, weather, typewriter text, stars) is
-  disabled automatically for visitors with `prefers-reduced-motion` set.
+- A brief pixel "LOADING..." boot screen plays on your first visit each
+  browser session (skipped after that, and skipped entirely under
+  reduced motion).
+- Switch away from the tab and the title changes to "👋 Come back!" —
+  reverts the moment you switch back.
+- A small compass in the bottom-left corner names whichever section is
+  currently in view as you scroll.
+- Seven achievements (explore every section, open every chest, open the
+  map, try all the weather, go full night owl, find the secret grove,
+  and a bonus one for unlocking everything) are tracked in
+  `localStorage` and shown as a badge shelf in the Patch Notes section —
+  locked ones show as "???" until you earn them.
+- All motion (ambient background, weather, typewriter text, stars, boot
+  screen, badge pop-ins) is disabled automatically for visitors with
+  `prefers-reduced-motion` set.
+
+## Social preview image
+
+`index.html` has Open Graph / Twitter Card meta tags pointing at
+`assets/og-image.png` (already generated) so the link looks good when
+shared on LinkedIn, Twitter, etc. They assume the site lives at
+`https://cerkez.ch/` — update the URLs in `<head>` if that ever changes.
+
+If you want to regenerate the preview image (e.g. after changing the
+palette), `assets/og-image-source.html` is the template used to make it —
+it reuses the real sprites/palette but never pulls from `content.js`, so
+a `???` placeholder can never end up in a shared link preview. See the
+comment at the top of that file for the regenerate command.
 
 ## Preview locally
 

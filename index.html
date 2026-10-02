@@ -12,6 +12,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Marko Cerkez // Portfolio</title>
 <meta name="description" content="Marko Cerkez — portfolio quest log: education, work and projects, retro-game style." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://cerkez.ch/" />
+<meta property="og:title" content="Marko Cerkez — Portfolio" />
+<meta property="og:description" content="A retro, pixel-art portfolio — trainer card, quest log, world map, item bag and more." />
+<meta property="og:image" content="https://cerkez.ch/assets/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Marko Cerkez — Portfolio" />
+<meta name="twitter:description" content="A retro, pixel-art portfolio — trainer card, quest log, world map, item bag and more." />
+<meta name="twitter:image" content="https://cerkez.ch/assets/og-image.png" />
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,6 +30,16 @@
 <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+
+<div class="boot-screen" id="boot-screen">
+  <div class="boot-screen__inner">
+    <p class="boot-screen__title">MARKO<span>CERKEZ</span>.CH</p>
+    <div class="boot-bar"><div class="boot-bar__fill" id="boot-fill"></div></div>
+    <p class="boot-screen__hint">LOADING...</p>
+  </div>
+</div>
+
+<div class="compass" id="compass"><span id="compass-label"></span></div>
 
 <div class="ambient-bg" id="ambient-bg" aria-hidden="true">
   <div class="stars" id="ambient-stars"></div>
@@ -120,6 +141,8 @@
 
   <section id="patches" class="panel panel--alt">
     <h2 class="panel__title"><span class="panel__title-badge">06</span> PATCH NOTES</h2>
+    <h3 class="badge-shelf__title">ACHIEVEMENTS</h3>
+    <div class="badge-shelf" id="badge-shelf"></div>
     <div class="patch-notes" id="patch-notes"></div>
   </section>
 

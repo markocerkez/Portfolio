@@ -948,7 +948,118 @@ img, svg { image-rendering: pixelated; }
 /* ---------- decorative scenery reused in panels ---------- */
 .scenery-tree, .scenery-bush { opacity: 0.9; }
 
+/* ---------- boot screen ---------- */
+.boot-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+.boot-screen.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.boot-screen__inner { display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 20px; }
+.boot-screen__title {
+  font-family: var(--font-head);
+  color: var(--paper);
+  font-size: clamp(14px, 4vw, 20px);
+  text-align: center;
+}
+.boot-screen__title span { color: var(--accent-2); }
+.boot-bar {
+  width: min(70vw, 320px);
+  height: 14px;
+  background: #2a2140;
+  border: 3px solid var(--accent-2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.boot-bar__fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--ok), #a6ff8f);
+}
+.boot-screen__hint {
+  font-family: var(--font-head);
+  font-size: 10px;
+  color: var(--paper);
+  opacity: 0.7;
+  animation: blink 1.2s steps(2) infinite;
+}
+
+/* ---------- scroll compass ---------- */
+.compass {
+  position: fixed;
+  left: 14px;
+  bottom: 14px;
+  z-index: 40;
+  background: var(--ink);
+  color: var(--accent-2);
+  font-family: var(--font-head);
+  font-size: 10px;
+  padding: 8px 12px;
+  border: 2px solid var(--accent-2);
+  border-radius: 6px;
+  box-shadow: var(--shadow-hard-sm);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+.compass.is-visible { opacity: 1; transform: translateY(0); }
+
+/* ---------- achievement badge shelf ---------- */
+.badge-shelf__title {
+  font-family: var(--font-head);
+  font-size: 11px;
+  color: var(--purple);
+  margin: 0 0 16px;
+}
+.badge-shelf {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+  margin-bottom: 36px;
+}
+.badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  background: var(--box-bg);
+  border: 3px solid var(--ink);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-hard-sm);
+  padding: 14px 10px;
+  transition: transform 0.15s ease;
+}
+.badge__icon { font-size: 26px; line-height: 1; }
+.badge__title { font-family: var(--font-head); font-size: 9px; }
+.badge__desc { font-size: 14px; color: #6a5c3f; margin: 0; }
+.badge.is-locked {
+  opacity: 0.55;
+  filter: grayscale(1);
+}
+.badge.is-unlocked {
+  animation: badgeUnlock 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes badgeUnlock {
+  0% { transform: scale(0.7); opacity: 0; }
+  70% { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boot-screen { display: none; }
+  .boot-screen__hint { animation: none; }
+  .badge.is-unlocked { animation: none; }
+}
+
 @media (max-width: 480px) {
   .topbar { flex-direction: column; gap: 8px; }
   body { font-size: 18px; }
+  .compass { left: 8px; bottom: 8px; font-size: 8px; padding: 6px 9px; }
 }
