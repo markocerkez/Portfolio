@@ -39,6 +39,8 @@ const PIXEL_PALETTE = {
   x: "#ff8f3c",
   // trainer portrait skin tone
   h: "#e8b894",
+  // trainer portrait shirt
+  c: "#3b6ea5",
 };
 
 function pixelSpriteSVG(rows, palette, pixelSize) {
@@ -313,87 +315,132 @@ const ICON_SNOWFLAKE = (() => {
   return grid.map((r) => r.join(""));
 })();
 
-/* Trainer card portrait: a rounder "game character select" style bust -
-   a stepped-rect silhouette (several 1-row-tall rects of increasing then
-   decreasing width, rather than one or two big rectangles) to fake a
-   curved head/jaw instead of a boxy one, plus round glasses with a
-   visible pupil+glint in each lens so the face actually looks back at
-   you. Still just a few big color regions rather than lots of small
-   accents - fine detail disappears at the card's ~120px display size,
-   a few large high-contrast shapes don't. All three regions are unioned
-   into ONE silhouette first (so only the shape's true outer edges get
-   outlined, see `paintFillRects`'s doc), then recolored, then the
-   glasses/shading are stamped on last as plain overwrites. */
+/* Trainer card portrait: a head-and-shoulders bust at roughly double the
+   resolution of earlier attempts (24x34 vs ~15x17), so the silhouette's
+   curve steps are fine enough to actually read as curves rather than
+   stairs, and there's room for eyes that are genuinely eyes (white
+   sclera + pupil inside a THIN rectangular glasses frame, not one thick
+   black ring standing in for the whole eye), plus ears, a neck and
+   shoulders in a shirt. Hair/face/beard/shirt are unioned into ONE
+   silhouette first (so only the shape's true outer edges get outlined,
+   see `paintFillRects`'s doc), then recolored, then eyes/eyebrows/nose/
+   shading are stamped on last as plain overwrites. */
 const PORTRAIT_HAIR_RECTS = [
-  { x: 6, y: 0, w: 4, h: 1 },
-  { x: 4, y: 1, w: 8, h: 1 },
-  { x: 2, y: 2, w: 11, h: 1 },
-  { x: 1, y: 3, w: 13, h: 1 },
-  { x: 0, y: 4, w: 15, h: 2 }, // rows 4-5
+  { x: 9, y: 0, w: 6, h: 1 },
+  { x: 7, y: 1, w: 10, h: 1 },
+  { x: 5, y: 2, w: 14, h: 1 },
+  { x: 4, y: 3, w: 16, h: 1 },
+  { x: 3, y: 4, w: 18, h: 1 },
+  { x: 2, y: 5, w: 20, h: 1 },
+  { x: 2, y: 6, w: 3, h: 3 },   // left sideburn, rows 6-8
+  { x: 19, y: 6, w: 3, h: 3 },  // right sideburn
+  { x: 2, y: 9, w: 2, h: 1 },   // left wisp tapering to nothing
+  { x: 20, y: 9, w: 2, h: 1 },  // right wisp
 ];
-// Forehead through cheeks stays one full-width block (rounds off at the
-// jaw below) - the glasses are stamped on top afterward, not carved as
-// their own filled region, so there's no seam to double-outline.
 const PORTRAIT_FACE_RECTS = [
-  { x: 0, y: 6, w: 15, h: 4 },  // rows 6-9: forehead, eye line, cheeks
-  { x: 1, y: 10, w: 13, h: 1 },
-  { x: 2, y: 11, w: 11, h: 1 },
-  { x: 3, y: 12, w: 9, h: 1 },
+  { x: 5, y: 6, w: 14, h: 3 },  // forehead, between the sideburns
+  { x: 4, y: 9, w: 16, h: 1 },
+  { x: 0, y: 10, w: 2, h: 3 },  // left ear
+  { x: 22, y: 10, w: 2, h: 3 }, // right ear
+  { x: 2, y: 10, w: 20, h: 6 }, // rows 10-15: eye line through nose/cheeks
+  { x: 3, y: 16, w: 18, h: 2 }, // rows 16-17: upper jaw taper
+  { x: 9, y: 27, w: 6, h: 2 },  // neck, rows 27-28
 ];
 const PORTRAIT_BEARD_RECTS = [
-  { x: 3, y: 13, w: 9, h: 1 },
-  { x: 4, y: 14, w: 7, h: 1 },
-  { x: 5, y: 15, w: 5, h: 1 },
-  { x: 6, y: 16, w: 3, h: 1 }, // chin tip
+  { x: 4, y: 18, w: 16, h: 2 },
+  { x: 5, y: 20, w: 14, h: 2 },
+  { x: 6, y: 22, w: 12, h: 2 },
+  { x: 7, y: 24, w: 10, h: 1 },
+  { x: 8, y: 25, w: 8, h: 1 },
+  { x: 9, y: 26, w: 6, h: 1 },  // chin tip
+];
+const PORTRAIT_SHIRT_RECTS = [
+  { x: 4, y: 29, w: 16, h: 1 },
+  { x: 2, y: 30, w: 20, h: 1 },
+  { x: 1, y: 31, w: 22, h: 1 },
+  { x: 0, y: 32, w: 24, h: 2 }, // rows 32-33
 ];
 const PORTRAIT_SILHOUETTE = rectUnionRows(
-  [...PORTRAIT_HAIR_RECTS, ...PORTRAIT_FACE_RECTS, ...PORTRAIT_BEARD_RECTS],
+  [
+    ...PORTRAIT_HAIR_RECTS,
+    ...PORTRAIT_FACE_RECTS,
+    ...PORTRAIT_BEARD_RECTS,
+    ...PORTRAIT_SHIRT_RECTS,
+  ],
   "1",
   "k"
 );
 const PORTRAIT_BASE = paintFillRects(
   paintFillRects(
-    paintFillRects(PORTRAIT_SILHOUETTE, PORTRAIT_HAIR_RECTS, "1", "t"),
-    PORTRAIT_FACE_RECTS,
+    paintFillRects(
+      paintFillRects(PORTRAIT_SILHOUETTE, PORTRAIT_HAIR_RECTS, "1", "t"),
+      PORTRAIT_FACE_RECTS,
+      "1",
+      "h"
+    ),
+    PORTRAIT_BEARD_RECTS,
     "1",
-    "h"
+    "n"
   ),
-  PORTRAIT_BEARD_RECTS,
+  PORTRAIT_SHIRT_RECTS,
   "1",
-  "n"
+  "c"
 );
 const PORTRAIT_SHADED = withPixels(
   withPixels(
-    PORTRAIT_BASE,
-    // a one-directional shadow down the hair's right edge, for a little depth
-    [[11, 1], [12, 2], [13, 3], [14, 4], [14, 5]],
+    withPixels(
+      PORTRAIT_BASE,
+      // a one-directional shadow down the hair's right edge, for depth
+      [[15, 1], [17, 2], [18, 3], [19, 4], [20, 5]],
+      "s"
+    ),
+    // same idea along the beard's right edge
+    [[17, 19], [16, 21], [14, 23], [12, 25]],
     "s"
   ),
-  // same idea along the beard's right edge
-  [[11, 13], [10, 14], [9, 15], [8, 16]],
+  // a hint of shadow inside each ear
+  [[1, 11], [22, 11]],
+  "s"
+);
+const PORTRAIT_EYEBROWS = withPixels(
+  PORTRAIT_SHADED,
+  [[6, 11], [7, 11], [8, 11], [9, 11], [14, 11], [15, 11], [16, 11], [17, 11]],
   "s"
 );
 const PORTRAIT_GLASSES = withPixels(
-  PORTRAIT_SHADED,
+  PORTRAIT_EYEBROWS,
   [
-    // left lens: a rounded ring (narrower top/bottom, wide middle) with
-    // an inward-facing pupil and an outward glint, not a blank window
-    [3, 7], [4, 7],
-    [2, 8], [5, 8],
-    [3, 9], [4, 9],
+    // left lens: a thin rectangular frame (outline only) around an eye,
+    // not a thick ring - the sclera/pupil below are what reads as an
+    // eye, the frame just has to stay out of their way
+    [6, 12], [7, 12], [8, 12], [9, 12], [10, 12],
+    [6, 13], [10, 13],
+    [6, 14], [7, 14], [8, 14], [9, 14], [10, 14],
     // right lens, mirrored
-    [10, 7], [11, 7],
-    [9, 8], [12, 8],
-    [10, 9], [11, 9],
+    [13, 12], [14, 12], [15, 12], [16, 12], [17, 12],
+    [13, 13], [17, 13],
+    [13, 14], [14, 14], [15, 14], [16, 14], [17, 14],
     // bridge
-    [7, 8],
+    [11, 13], [12, 13],
   ],
   "k"
 );
+const PORTRAIT_EYES = withPixels(
+  withPixels(
+    PORTRAIT_GLASSES,
+    // sclera
+    [[7, 13], [9, 13], [14, 13], [16, 13]],
+    "w"
+  ),
+  // pupils
+  [[8, 13], [15, 13]],
+  "k"
+);
+const PORTRAIT_NOSE = withPixels(PORTRAIT_EYES, [[11, 15], [12, 15]], "s");
 const PORTRAIT_HEAD = withPixels(
-  withPixels(PORTRAIT_GLASSES, [[4, 8], [10, 8]], "k"), // pupils, facing each other
-  [[3, 8], [11, 8]], // glints
-  "w"
+  PORTRAIT_NOSE,
+  [[10, 20], [11, 20], [12, 20], [13, 20]], // lips, visible through the mustache
+  "h"
 );
 
 const SPRITES = {
