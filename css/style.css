@@ -93,7 +93,9 @@
 }
 [data-weather="snow"] .hero__scenery .scenery-tree,
 [data-weather="snow"] .hero__scenery .scenery-bush {
-  filter: drop-shadow(2px 3px 0 rgba(0,0,0,0.15)) brightness(1.25) saturate(0.35);
+  /* subtler than the rain tint - the snowCap overlay below carries most
+     of the "snowed on" look now, this just cools the greens a touch */
+  filter: drop-shadow(2px 3px 0 rgba(0,0,0,0.15)) brightness(1.05) saturate(0.8);
 }
 [data-weather="rain"] .hero__ground,
 [data-weather="snow"] .hero__ground {
@@ -412,7 +414,6 @@ img, svg { image-rendering: pixelated; }
   height: 90px;
   background-image:
     repeating-linear-gradient(90deg, var(--grass-2) 0 16px, var(--grass-1) 16px 32px);
-  border-top: 6px solid var(--dirt);
   box-shadow: inset 0 -70px 0 -10px var(--dirt);
   z-index: 1;
   animation: grassSway 7s ease-in-out infinite;
@@ -436,6 +437,15 @@ img, svg { image-rendering: pixelated; }
 }
 .hero__scenery .scenery-tree { filter: drop-shadow(2px 3px 0 rgba(0,0,0,0.2)); }
 .hero__scenery .scenery-bush { filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.2)); }
+.hero__scenery .scenery-base { display: block; }
+.hero__scenery .scenery-snow {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+[data-weather="snow"] .hero__scenery .scenery-snow { opacity: 1; }
 
 .hero__content {
   position: relative;

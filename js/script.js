@@ -104,17 +104,26 @@
     const ground = $("#hero-ground");
     const scenery = document.createElement("div");
     scenery.className = "hero__scenery";
+    // A mix of sizes/shapes per side rather than one repeated tree+bush -
+    // each also gets a snow-dusted overlay (see snowCap in sprites.js)
+    // shown only while the weather toggle is set to snow.
     const placements = [
-      { type: "tree", left: "4%", scale: 5 },
-      { type: "bush", left: "13%", scale: 5 },
-      { type: "bush", left: "82%", scale: 5 },
-      { type: "tree", left: "91%", scale: 5 },
+      { kind: "tree", name: "treeTall", left: "2%", scale: 5.5 },
+      { kind: "bush", name: "bush", left: "8%", scale: 4.5 },
+      { kind: "bush", name: "bushSmall", left: "14%", scale: 3.5 },
+      { kind: "tree", name: "treeSmall", left: "19%", scale: 4 },
+      { kind: "tree", name: "treeSmall", left: "79%", scale: 4 },
+      { kind: "bush", name: "bushRound", left: "85%", scale: 4 },
+      { kind: "bush", name: "bush", left: "90%", scale: 4.5 },
+      { kind: "tree", name: "treeTall", left: "96%", scale: 5.5 },
     ];
     placements.forEach((p) => {
       const el = document.createElement("div");
-      el.className = p.type === "tree" ? "scenery-tree" : "scenery-bush";
+      el.className = "scenery-" + p.kind;
       el.style.left = p.left;
-      el.innerHTML = sprite(p.type, p.scale);
+      el.innerHTML =
+        `<span class="scenery-base">${sprite(p.name, p.scale)}</span>` +
+        `<span class="scenery-snow">${pixelSpriteSVG(snowCap(SPRITES[p.name]), PIXEL_PALETTE, p.scale)}</span>`;
       scenery.appendChild(el);
     });
     ground.before(scenery);
