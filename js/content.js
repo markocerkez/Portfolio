@@ -95,9 +95,9 @@ const SITE_DATA = {
       link: "", // GitHub/live link, or leave empty
     },
     {
-      name: "Knock",
-      tech: ["???"],
-      description: "??? My current project — fill in what Knock does and the stack it's built with.",
+      name: "Knock — Master's Project",
+      tech: ["ESP32 / C++", "Spring Boot", "Vue 3 / TypeScript", "PostgreSQL"],
+      description: "My Master's project at UZH, with the HASEL research group: a dedicated physical touchscreen device that lets co-located colleagues negotiate availability before interrupting each other — knock, pick a topic and urgency, and get an accept / defer / decline back in seconds. Built end-to-end with a team of three: ESP32-S3 firmware, a Spring Boot backend, and a Vue 3 web app.",
       link: "",
     },
     {
