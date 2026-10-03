@@ -39,6 +39,8 @@ const PIXEL_PALETTE = {
   x: "#ff8f3c",
   // trainer portrait skin tone
   h: "#e8b894",
+  // trainer portrait shirt
+  c: "#3b6ea5",
 };
 
 function pixelSpriteSVG(rows, palette, pixelSize) {
@@ -127,6 +129,25 @@ function layerSprites(base, top, offsetX, offsetY) {
     row.split("").forEach((ch, x) => {
       if (ch !== ".") grid[y + offsetY][x + offsetX] = ch;
     });
+  });
+  return grid.map((r) => r.join(""));
+}
+
+/* Recolors cells of a `rectUnionRows` result that are still the generic
+   fill placeholder and fall inside one of `rects`, leaving every outline
+   cell (and anything already recolored by an earlier pass) untouched.
+   Used to build a multi-region shape (e.g. hair + skin) as a single
+   silhouette — so the only outline pixels are the shape's true outer
+   edges — then paint each region afterwards instead of outlining each
+   region separately and getting a doubled seam where they meet. */
+function paintFillRects(rows, rects, placeholder, color) {
+  const grid = rows.map((r) => r.split(""));
+  rects.forEach((r) => {
+    for (let y = r.y; y < r.y + r.h; y++) {
+      for (let x = r.x; x < r.x + r.w; x++) {
+        if (grid[y] && grid[y][x] === placeholder) grid[y][x] = color;
+      }
+    }
   });
   return grid.map((r) => r.join(""));
 }
@@ -263,54 +284,82 @@ const ICON_SNOWFLAKE = (() => {
   return grid.map((r) => r.join(""));
 })();
 
-/* Trainer card portrait: a pixel-art head (glasses + short beard) built
-   from a face shape with a hair cap layered on top, then glasses and a
-   beard stamped on as accents — same build-up as the UI icons. */
-const PORTRAIT_FACE = rectUnionRows(
-  [
-    { x: 3, y: 3, w: 7, h: 1 },
-    { x: 1, y: 4, w: 11, h: 6 },
-    { x: 2, y: 10, w: 9, h: 2 },
-    { x: 4, y: 12, w: 5, h: 1 },
-  ],
-  "h",
+/* Trainer card portrait: a bigger, more detailed pixel-art head+shoulders.
+   Hair, face and shoulders are unioned into ONE silhouette first (so only
+   the shape's true outer edges get outlined), then each region is
+   recolored — avoids the doubled black seam you'd get from outlining
+   hair and face as two separate shapes and stacking them. Eyebrows,
+   glasses, nose and beard are stamped on last as accents, same build-up
+   as the UI icons. */
+const PORTRAIT_HAIR_RECTS = [
+  { x: 3, y: 0, w: 7, h: 1 },   // top peak
+  { x: 1, y: 1, w: 11, h: 3 },  // cap, flush with where the face starts
+  { x: 1, y: 4, w: 2, h: 2 },   // left sideburn
+  { x: 10, y: 4, w: 2, h: 2 },  // right sideburn
+];
+const PORTRAIT_FACE_RECTS = [
+  { x: 2, y: 4, w: 9, h: 7 },   // main face
+  { x: 1, y: 6, w: 1, h: 3 },   // left ear
+  { x: 11, y: 6, w: 1, h: 3 },  // right ear
+  { x: 3, y: 11, w: 7, h: 2 },  // jaw
+  { x: 5, y: 13, w: 3, h: 1 },  // chin
+  { x: 5, y: 14, w: 3, h: 1 },  // neck
+];
+const PORTRAIT_SHOULDER_RECTS = [{ x: 0, y: 15, w: 12, h: 5 }];
+const PORTRAIT_SILHOUETTE = rectUnionRows(
+  [...PORTRAIT_HAIR_RECTS, ...PORTRAIT_FACE_RECTS, ...PORTRAIT_SHOULDER_RECTS],
+  "1",
   "k"
 );
-const PORTRAIT_HAIR = rectUnionRows(
+const PORTRAIT_BASE = paintFillRects(
+  paintFillRects(
+    paintFillRects(PORTRAIT_SILHOUETTE, PORTRAIT_HAIR_RECTS, "1", "t"),
+    PORTRAIT_FACE_RECTS,
+    "1",
+    "h"
+  ),
+  PORTRAIT_SHOULDER_RECTS,
+  "1",
+  "c"
+);
+const PORTRAIT_BROWS_NOSE = withPixels(
+  PORTRAIT_BASE,
   [
-    { x: 2, y: 0, w: 9, h: 2 },
-    { x: 1, y: 2, w: 11, h: 2 },
+    [3, 5], [4, 5], [5, 5], [7, 5], [8, 5], [9, 5], // eyebrows
+    [6, 8], [6, 9], // nose bridge/tip shadow
   ],
-  "t",
+  "s"
+);
+const PORTRAIT_GLASSES = withPixels(
+  PORTRAIT_BROWS_NOSE,
+  [
+    // two lens rings + bridge. Centers are left bare for the final pass
+    // to fill with a bright "glare" so each ring reads as a ring.
+    [3, 6], [4, 6], [5, 6],
+    [3, 7], [5, 7],
+    [3, 8], [4, 8], [5, 8],
+    [7, 6], [8, 6], [9, 6],
+    [7, 7], [9, 7],
+    [7, 8], [8, 8], [9, 8],
+    [6, 7],
+  ],
   "k"
 );
-const PORTRAIT = withPixels(
+const PORTRAIT_BEARD = withPixels(
   withPixels(
-    layerSprites(PORTRAIT_FACE, PORTRAIT_HAIR),
-    // beard — a brown shade so it reads as a beard, not more black outline
+    PORTRAIT_GLASSES,
     [
-      [2, 9], [3, 9], [4, 9], [5, 9], [6, 9], [7, 9], [8, 9], [9, 9], [10, 9],
-      [2, 10], [3, 10], [4, 10], [5, 10], [6, 10], [7, 10], [8, 10], [9, 10], [10, 10],
-      [4, 12], [5, 12], [6, 12], [7, 12], [8, 12],
+      [5, 10], [6, 10], [7, 10], // mustache
+      [3, 11], [4, 11], [5, 11], [6, 11], [7, 11], [8, 11], [9, 11],
+      [3, 12], [4, 12], [5, 12], [6, 12], [7, 12], [8, 12], [9, 12],
+      [5, 13], [6, 13], [7, 13], // chin
     ],
     "n"
   ),
-  [
-    // glasses: two lens rings + bridge, drawn after the beard so they
-    // stay crisp black on top. Lens centers are left for the next pass
-    // to fill with a bright "glare" so the ring reads as a ring instead
-    // of a solid block.
-    [3, 5], [4, 5], [5, 5],
-    [3, 6], [5, 6],
-    [3, 7], [4, 7], [5, 7],
-    [8, 5], [9, 5], [10, 5],
-    [8, 6], [10, 6],
-    [8, 7], [9, 7], [10, 7],
-    [6, 6], [7, 6],
-  ],
-  "k"
+  [[4, 12], [8, 12], [6, 13]], // beard shading for a bit of texture
+  "s"
 );
-const PORTRAIT_WITH_LENSES = withPixels(PORTRAIT, [[4, 6], [9, 6]], "w");
+const PORTRAIT_WITH_LENSES = withPixels(PORTRAIT_BEARD, [[4, 7], [8, 7]], "w");
 
 const SPRITES = {
   blobIdle: [

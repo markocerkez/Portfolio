@@ -44,13 +44,6 @@ const SITE_DATA = {
   education: [
     {
       status: "done",
-      title: "Bachelor — started in Electrical Engineering & IT",
-      place: "ETH Zürich",
-      period: "2021 – 2022",
-      notes: "Completed the first year before transferring to the University of Zürich to focus on software.",
-    },
-    {
-      status: "done",
       title: "Bachelor of Science in Software Systems",
       place: "University of Zürich",
       period: "2022 – 2025",
@@ -96,27 +89,27 @@ const SITE_DATA = {
   // Add as many entries as you like; the grid wraps automatically.
   projects: [
     {
-      name: "Training Center Info System (POC)",
+      name: "Info System",
       tech: ["???"],
       description: "A proof-of-concept information system built during my time at Digicomp Academy, from concept to implementation.",
       link: "", // GitHub/live link, or leave empty
     },
     {
+      name: "Knock",
+      tech: ["???"],
+      description: "??? My current project — fill in what Knock does and the stack it's built with.",
+      link: "",
+    },
+    {
+      name: "Bachelor's Thesis — Jupy-Canvas Enhancements",
+      tech: ["Python", "Jupyter"],
+      description: "My bachelor's thesis, extending Jupy-Canvas — a Jupyter-notebook-based coding tool — with new capabilities.",
+      link: "",
+    },
+    {
       name: "Homelab & Self-Hosted Infrastructure",
       tech: ["???"],
       description: "A personal homelab running self-hosted services — an ongoing sandbox for learning networking, infrastructure, and ops.",
-      link: "",
-    },
-    {
-      name: "??? Project Three",
-      tech: ["???"],
-      description: "??? Short description of what this project does.",
-      link: "",
-    },
-    {
-      name: "??? Project Four",
-      tech: ["???"],
-      description: "??? Short description of what this project does.",
       link: "",
     },
   ],
@@ -125,7 +118,7 @@ const SITE_DATA = {
   contact: {
     email: "marko.cerkez@bluewin.ch",
     github: "https://github.com/markocerkez",
-    linkedin: "",
+    linkedin: "https://www.linkedin.com/in/marko.cerkez",
     message: "Want to team up, hire me, or just say hi? Reach out below!",
   },
 
