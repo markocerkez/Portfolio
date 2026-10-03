@@ -661,6 +661,15 @@
     }
 
     function updateCompass() {
+      // Fixed to the viewport, not the document - near the very bottom of
+      // the page it would otherwise sit on top of the footer text, which
+      // is short enough that the last section can still cover the marker
+      // line even at max scroll. Hide it once the footer is in view.
+      const footer = $(".footer");
+      if (footer && footer.getBoundingClientRect().top <= window.innerHeight) {
+        compass.classList.remove("is-visible");
+        return;
+      }
       const markerY = window.innerHeight * 0.35;
       let current = null;
       for (const sec of sections) {
