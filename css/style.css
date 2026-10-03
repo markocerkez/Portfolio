@@ -310,7 +310,12 @@ img, svg { image-rendering: pixelated; }
 }
 .topbar__name-accent { color: var(--accent-2); }
 
-.menu-toggle { display: none; }
+/* Specificity must beat .icon-btn's own `display: inline-flex` (same
+   single-class specificity, and .icon-btn comes later in this file) -
+   otherwise this button stays visible - and clickable, toggling its own
+   label with no visible effect - outside the mobile breakpoint below,
+   where .topbar__controls has no collapse styling to respond to it. */
+.icon-btn.menu-toggle { display: none; }
 
 .menu {
   display: flex;
@@ -1167,7 +1172,7 @@ img, svg { image-rendering: pixelated; }
 @media (max-width: 760px) {
   .topbar { flex-direction: column; align-items: stretch; gap: 0; }
   .topbar__bar { justify-content: space-between; }
-  .menu-toggle { display: inline-flex; }
+  .icon-btn.menu-toggle { display: inline-flex; }
 
   .topbar__controls {
     flex-direction: column;
