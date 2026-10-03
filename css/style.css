@@ -1,5 +1,5 @@
 /* ==========================================================
-   Marko Cerkez — pixel/RPG portfolio
+   Marko Cerkez - pixel/RPG portfolio
    Palette inspired by GBC-era Pokémon + Terraria daytime
    ========================================================== */
 
@@ -24,15 +24,25 @@
   --radius: 10px;
   --font-head: "Press Start 2P", monospace;
   --font-body: "VT323", monospace;
+  /* page-level surface/text - separate from --ink/--paper, which are also
+     used as fixed (theme-invariant) colors for chips sitting on accent
+     backgrounds, so those can't just be swapped wholesale for dark mode */
+  --surface: var(--paper);
+  --text: var(--ink);
+  --text-muted: #6a5c3f;
 }
 
-/* ---------- night theme (atmosphere only — cards stay readable) ---------- */
+/* ---------- night theme: a real site-wide dark mode, not just the landscape ---------- */
 :root[data-theme="night"] {
   --sky-top: #16213e;
   --sky-bottom: #2b2f6b;
   --grass-1: #2f9e63;
   --grass-2: #1a6b44;
   --dirt: #3c2a18;
+  --surface: #150e26;
+  --box-bg: #241a3d;
+  --text: #f4eee0;
+  --text-muted: #b7a8d1;
 }
 :root[data-theme="night"] .ambient-cloud,
 :root[data-theme="night"] .cloud {
@@ -40,6 +50,57 @@
 }
 :root[data-theme="night"] .mote {
   filter: brightness(1.5);
+}
+:root[data-theme="night"] .panel--alt { background: #1c1433; }
+:root[data-theme="night"] .stat-bar__track { background: #3a2d52; }
+:root[data-theme="night"] .location {
+  background: linear-gradient(160deg, #1f3a2a, #16301f);
+}
+:root[data-theme="night"] .location__period { color: #a3c98c; }
+:root[data-theme="night"] .trainer-card__portrait {
+  background: linear-gradient(160deg, #1b2a3d, #15331f);
+}
+:root[data-theme="night"] body {
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* ---------- weather (reskins the hero landscape - sky, ground, trees, clouds) ---------- */
+[data-weather="rain"] .hero {
+  --sky-top: #5c6b78;
+  --sky-bottom: #8a99a4;
+  --grass-1: #3f8a58;
+  --grass-2: #1f6b42;
+  --dirt: #4a3016;
+}
+[data-weather="snow"] .hero {
+  --sky-top: #aebfcf;
+  --sky-bottom: #e4edf2;
+  --grass-1: #f3f9ff;
+  --grass-2: #dde9f0;
+  --dirt: #eef5fa;
+}
+[data-weather="rain"] .hero .cloud,
+[data-weather="rain"] .ambient-cloud {
+  filter: grayscale(0.5) brightness(0.8);
+}
+[data-weather="snow"] .hero .cloud,
+[data-weather="snow"] .ambient-cloud {
+  filter: brightness(1.03) saturate(0.85);
+}
+[data-weather="rain"] .hero__scenery .scenery-tree,
+[data-weather="rain"] .hero__scenery .scenery-bush {
+  filter: drop-shadow(2px 3px 0 rgba(0,0,0,0.2)) brightness(0.82) saturate(0.85);
+}
+[data-weather="snow"] .hero__scenery .scenery-tree,
+[data-weather="snow"] .hero__scenery .scenery-bush {
+  filter: drop-shadow(2px 3px 0 rgba(0,0,0,0.15)) brightness(1.25) saturate(0.35);
+}
+[data-weather="rain"] .hero__ground,
+[data-weather="snow"] .hero__ground {
+  transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+[data-weather] .hero {
+  transition: background 0.4s ease;
 }
 
 * { box-sizing: border-box; }
@@ -50,8 +111,8 @@ html {
 
 body {
   margin: 0;
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--surface);
+  color: var(--text);
   font-family: var(--font-body);
   font-size: 20px;
   line-height: 1.5;
@@ -386,7 +447,7 @@ img, svg { image-rendering: pixelated; }
 
 .hero__title {
   font-size: clamp(22px, 6vw, 40px);
-  color: var(--ink);
+  color: var(--text);
   text-shadow: 3px 3px 0 var(--accent-2);
   margin: 6px 0 0;
 }
@@ -438,7 +499,7 @@ img, svg { image-rendering: pixelated; }
   position: absolute;
   bottom: 8px;
   right: 14px;
-  color: var(--ink);
+  color: var(--text);
   opacity: 0;
 }
 .dialog-box__cursor.is-ready { animation: blink 1s steps(2) infinite; }
@@ -472,7 +533,7 @@ img, svg { image-rendering: pixelated; }
 }
 .panel__hint {
   font-size: 16px;
-  color: #6a5c3f;
+  color: var(--text-muted);
   margin-top: -14px;
   margin-bottom: 24px;
 }
@@ -591,7 +652,7 @@ img, svg { image-rendering: pixelated; }
 .quest--done .quest__icon { background: var(--ok); }
 .quest--active .quest__icon { background: var(--accent-2); }
 .quest__title { font-size: 20px; font-weight: bold; margin: 0; }
-.quest__place { font-size: 17px; color: #6a5c3f; margin: 2px 0; }
+.quest__place { font-size: 17px; color: var(--text-muted); margin: 2px 0; }
 .quest__notes { font-size: 16px; margin: 4px 0 0; }
 .quest__status {
   font-family: var(--font-head);
@@ -819,7 +880,7 @@ img, svg { image-rendering: pixelated; }
 .map-modal__hint {
   text-align: center;
   font-size: 15px;
-  color: #6a5c3f;
+  color: var(--text-muted);
   margin: 12px 0 0;
 }
 .map-modal__stage {
@@ -1088,7 +1149,7 @@ img, svg { image-rendering: pixelated; }
 .badge__icon svg { width: 34px; height: auto; max-height: 40px; }
 .badge.is-locked .badge__icon svg { width: 24px; }
 .badge__title { font-family: var(--font-head); font-size: 9px; }
-.badge__desc { font-size: 14px; color: #6a5c3f; margin: 0; }
+.badge__desc { font-size: 14px; color: var(--text-muted); margin: 0; }
 .badge.is-locked {
   opacity: 0.55;
   filter: grayscale(1);

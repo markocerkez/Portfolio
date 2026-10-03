@@ -6,7 +6,7 @@
   anything out of range is just treated as transparent.
 */
 
-/* Every key MUST be exactly one character — sprite rows below are
+/* Every key MUST be exactly one character - sprite rows below are
    indexed character-by-character, so a two-letter key would silently
    never match and that pixel would render as transparent. */
 const PIXEL_PALETTE = {
@@ -97,7 +97,7 @@ function rectUnionRows(rects, fill, outline) {
 }
 
 /* Overwrites specific [x, y] cells of a sprite (built by rectUnionRows or
-   hand-written) with a different character — used to add small accents
+   hand-written) with a different character - used to add small accents
    (a spine line, a flap crease, a latch) onto a plain rectangular base
    without hand-counting a whole new grid. Returns new rows; doesn't
    mutate the input. */
@@ -110,8 +110,8 @@ function withPixels(rows, points, ch) {
 }
 
 /* Stacks `top` on `base` (non-"." cells of top win), padding both to a
-   shared size first. Used to build a sprite out of separate shapes — a
-   hair cap over a face, say — without hand-merging grids by eye. */
+   shared size first. Used to build a sprite out of separate shapes - a
+   hair cap over a face, say - without hand-merging grids by eye. */
 function layerSprites(base, top, offsetX, offsetY) {
   offsetX = offsetX || 0;
   offsetY = offsetY || 0;
@@ -135,8 +135,8 @@ function layerSprites(base, top, offsetX, offsetY) {
    fill placeholder and fall inside one of `rects`, leaving every outline
    cell (and anything already recolored by an earlier pass) untouched.
    Used to build a multi-region shape (e.g. hair + skin) as a single
-   silhouette — so the only outline pixels are the shape's true outer
-   edges — then paint each region afterwards instead of outlining each
+   silhouette - so the only outline pixels are the shape's true outer
+   edges - then paint each region afterwards instead of outlining each
    region separately and getting a doubled seam where they meet. */
 function paintFillRects(rows, rects, placeholder, color) {
   const grid = rows.map((r) => r.split(""));
@@ -198,7 +198,7 @@ const BUTTERFLY = [
   ),
 ];
 
-/* Small UI icons — replace every emoji used in buttons/labels/links so
+/* Small UI icons - replace every emoji used in buttons/labels/links so
    nothing on the page falls back to the platform's color emoji font. */
 const ICON_SUN = rectUnionRows(
   [
@@ -284,7 +284,7 @@ const ICON_SNOWFLAKE = (() => {
 
 /* Trainer card portrait: a bust built from a few big, bold color regions
    (hair+glasses-frame, face, beard) rather than lots of small 1px accents
-   — at the card's actual ~120px display size, fine detail (individual
+   - at the card's actual ~120px display size, fine detail (individual
    eyebrow/nose/beard-texture pixels) reads as noise, while a few large,
    high-contrast shapes read clearly as a face. All three regions are
    unioned into ONE silhouette first (so only the shape's true outer edges
@@ -294,10 +294,10 @@ const ICON_SNOWFLAKE = (() => {
 const PORTRAIT_HAIR_RECTS = [
   { x: 3, y: 0, w: 7, h: 1 },   // crown
   { x: 1, y: 1, w: 11, h: 3 },  // main mass, rows 1-3
-  { x: 0, y: 3, w: 1, h: 1 },   // left poof — a little asymmetric flourish
+  { x: 0, y: 3, w: 1, h: 1 },   // left poof - a little asymmetric flourish
   { x: 12, y: 3, w: 1, h: 1 },  // right poof
 ];
-// One big skin block spans forehead, eye line and cheeks — the glasses
+// One big skin block spans forehead, eye line and cheeks - the glasses
 // are drawn as a thin frame stamped on top afterward, not a separate
 // filled region, so there's no seam to cause a double outline.
 const PORTRAIT_FACE_RECTS = [{ x: 1, y: 4, w: 11, h: 7 }]; // rows 4-10
@@ -328,7 +328,7 @@ const PORTRAIT_GLASSES = withPixels(
   [
     // temple arms, poking past the face silhouette like real glasses do
     [0, 7], [1, 7], [11, 7], [12, 7],
-    // left lens ring (interior stays skin — no glint, just an open frame)
+    // left lens ring (interior stays skin - no glint, just an open frame)
     [2, 6], [3, 6], [4, 6], [5, 6],
     [2, 7], [5, 7],
     [2, 8], [3, 8], [4, 8], [5, 8],
@@ -461,7 +461,7 @@ const SPRITES = {
     ".kwwwwk.",
     "..kkkk..",
   ],
-  // custom cursor sprites — a default arrow and a "selection diamond"
+  // custom cursor sprites - a default arrow and a "selection diamond"
   // for anything clickable, built once at load and set as the page cursor
   cursor: [
     "k.......",
@@ -519,7 +519,7 @@ const SPRITES = {
     "..kuuuk..",
     ".kuuuuuk.",
   ],
-  // shown for a locked/unearned achievement — deliberately generic so it
+  // shown for a locked/unearned achievement - deliberately generic so it
   // never spoils what the real icon looks like
   badgeLocked: [
     ".kkkk..",
@@ -532,7 +532,7 @@ const SPRITES = {
     "..kk...",
     "..kk...",
   ],
-  // golden "shiny" variant of the blob mascot — easter-egg only
+  // golden "shiny" variant of the blob mascot - easter-egg only
   blobShiny: [
     ".....kkkkkk.....",
     "...kkyyyyyykk...",

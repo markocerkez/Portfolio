@@ -22,7 +22,7 @@
     return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
-  /* Storage can throw (privacy mode, blocked cookies, sandboxed iframes) —
+  /* Storage can throw (privacy mode, blocked cookies, sandboxed iframes) -
      every call site just wants "best effort", so centralize the try/catch. */
   function storageGet(store, key) {
     try {
@@ -181,7 +181,7 @@
         <div class="quest__icon">${done ? "✓" : "…"}</div>
         <div>
           <p class="quest__title">${edu.title}</p>
-          <p class="quest__place">${edu.place} — ${edu.period}</p>
+          <p class="quest__place">${edu.place} - ${edu.period}</p>
           <p class="quest__notes">${edu.notes}</p>
         </div>
         <div class="quest__status">${done ? "QUEST COMPLETE" : "IN PROGRESS"}</div>`;
@@ -326,7 +326,7 @@
     saveAchievements();
     const a = ACHIEVEMENTS.find((x) => x.id === id);
     if (a && !opts.silent) {
-      showToast(`ACHIEVEMENT UNLOCKED\n${a.title} — ${a.desc}`);
+      showToast(`ACHIEVEMENT UNLOCKED\n${a.title} - ${a.desc}`);
       playBlip(988);
       setTimeout(() => playBlip(1318), 120);
     }
@@ -364,7 +364,7 @@
     const btn = $("#menu-toggle");
     const controls = $("#topbar-controls");
     if (!btn || !controls) return;
-    // Must match the CSS breakpoint below — the menu only actually
+    // Must match the CSS breakpoint below - the menu only actually
     // collapses (and should only go inert) under this width. Above it,
     // .topbar__controls is always fully visible regardless of the
     // is-open class, so it must never be inert there.
@@ -387,11 +387,11 @@
       playBlip(open ? 660 : 440);
     });
 
-    // picking anything inside closes the menu again — it's meant to be a
+    // picking anything inside closes the menu again - it's meant to be a
     // quick drawer on a phone, not a panel you leave open over the page.
     // (wireNav's own click handler already closes it instantly before
     // scrolling for nav buttons; this animated path covers the other
-    // controls — map/weather/theme/sound — which don't scroll.)
+    // controls - map/weather/theme/sound - which don't scroll.)
     controls.addEventListener("click", (e) => {
       if (e.target.closest("button")) setOpen(false);
     });
@@ -445,7 +445,7 @@
   function wireBlink() {
     const mascots = $$("#hero-mascot, #npc-mascot");
     setInterval(() => {
-      if (shinyMode) return; // shiny mascot doesn't blink — it sparkles instead
+      if (shinyMode) return; // shiny mascot doesn't blink - it sparkles instead
       mascots.forEach((m) => {
         m.innerHTML = sprite("blobBlink", m.id === "hero-mascot" ? 8 : 7);
       });
@@ -475,7 +475,7 @@
       gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.12);
       osc.stop(audioCtx.currentTime + 0.13);
     } catch (e) {
-      /* audio not available — silently ignore */
+      /* audio not available - silently ignore */
     }
   }
   function wireSound() {
@@ -547,6 +547,7 @@
 
     function renderWeather(state) {
       field.innerHTML = "";
+      document.documentElement.setAttribute("data-weather", state);
       icon.innerHTML = sprite(meta[state].icon, 2);
       label.textContent = meta[state].label;
       if (state !== "clear") {
@@ -602,7 +603,7 @@
   function wireTabTitleTrick() {
     const original = document.title;
     document.addEventListener("visibilitychange", () => {
-      // A browser tab title is plain text — there's no way to show a
+      // A browser tab title is plain text - there's no way to show a
       // pixel icon here, so this stays emoji-free text only.
       document.title = document.hidden ? "Come back!" : original;
     });

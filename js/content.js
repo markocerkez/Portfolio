@@ -1,7 +1,7 @@
 /* ============================================================
-   CARTRIDGE DATA — edit this file to fill in your real info.
+   CARTRIDGE DATA - edit this file to fill in your real info.
    Everything shown on the page is pulled from the SITE_DATA
-   object below. "???" marks a placeholder — swap it out, keep
+   object below. "???" marks a placeholder - swap it out, keep
    quotes and commas as they are, save, and refresh the page.
    No other file needs to change.
    ============================================================ */
@@ -14,21 +14,21 @@ const SITE_DATA = {
     tagline: "A WILD DEVELOPER APPEARED!",
     // One or two short lines for the hero "intro box".
     introLines: [
-      "Hi, I'm Marko — Software Engineer and Java Trainer based in Switzerland.",
+      "Hi, I'm Marko - Software Engineer and Java Trainer based in Switzerland.",
       "Scroll down to see my quests, items & stats.",
     ],
   },
 
-  // "TRAINER CARD" — your about-me stat screen.
+  // "TRAINER CARD" - your about-me stat screen.
   trainer: {
-    photo: null, // e.g. "assets/avatar.png" for a real photo — leave null for the pixel-art portrait
+    photo: null, // e.g. "assets/avatar.png" for a real photo - leave null for the pixel-art portrait
     class: "SOFTWARE ENGINEER & JAVA TRAINER",
     location: "Lenzburg, Switzerland",
     bio: "Ambitious software engineer with a passion for clean code, solving tricky problems, and teaching others how to do the same. Outside of work I'm usually 3D-printing prototypes, tinkering with my homelab, or training my dog.",
-    // Path to your CV/resume PDF — drop the file into assets/ and point this
+    // Path to your CV/resume PDF - drop the file into assets/ and point this
     // at it. Leave as "" to hide the "Get Scroll of Resume" button entirely.
-    resumeUrl: "assets/resume.pdf", // currently the German CV — swap in an English one whenever you have it
-    // Skill bars, 0-100. Rough estimates from your CV's skill bars —
+    resumeUrl: "assets/resume.pdf", // currently the German CV - swap in an English one whenever you have it
+    // Skill bars, 0-100. Rough estimates from your CV's skill bars -
     // tweak freely, these were never meant to be exact.
     stats: [
       { label: "JAVA", value: 85 },
@@ -40,7 +40,7 @@ const SITE_DATA = {
     ],
   },
 
-  // "QUEST LOG" — education. status: "done" or "active".
+  // "QUEST LOG" - education. status: "done" or "active".
   education: [
     {
       status: "done",
@@ -58,7 +58,7 @@ const SITE_DATA = {
     },
   ],
 
-  // "WORLD MAP" — work experience. icon: "briefcase" or "book".
+  // "WORLD MAP" - work experience. icon: "briefcase" or "book".
   work: [
     {
       icon: "briefcase",
@@ -81,11 +81,11 @@ const SITE_DATA = {
       company: "ATEGRA Software Engineering",
       period: "Nov 2025 – Feb 2026",
       description:
-        "Supported and maintained software for public-sector clients — user administration, infrastructure monitoring, and direct client support.",
+        "Supported and maintained software for public-sector clients - user administration, infrastructure monitoring, and direct client support.",
     },
   ],
 
-  // "ITEM BAG" — projects. Each one renders as a treasure chest card.
+  // "ITEM BAG" - projects. Each one renders as a treasure chest card.
   // Add as many entries as you like; the grid wraps automatically.
   projects: [
     {
@@ -95,26 +95,26 @@ const SITE_DATA = {
       link: "", // GitHub/live link, or leave empty
     },
     {
-      name: "Knock — Master's Project",
+      name: "Knock - Master's Project",
       tech: ["ESP32 / C++", "Spring Boot", "Vue 3 / TypeScript", "PostgreSQL"],
-      description: "My Master's project at UZH, with the HASEL research group: a dedicated physical touchscreen device that lets co-located colleagues negotiate availability before interrupting each other — knock, pick a topic and urgency, and get an accept / defer / decline back in seconds. Built end-to-end with a team of three: ESP32-S3 firmware, a Spring Boot backend, and a Vue 3 web app.",
+      description: "My Master's project at UZH, with the HASEL research group: a dedicated physical touchscreen device that lets co-located colleagues negotiate availability before interrupting each other - knock, pick a topic and urgency, and get an accept / defer / decline back in seconds. Built end-to-end with a team of three: ESP32-S3 firmware, a Spring Boot backend, and a Vue 3 web app.",
       link: "",
     },
     {
-      name: "Bachelor's Thesis — Jupy-Canvas Enhancements",
-      tech: ["Python", "Jupyter"],
-      description: "My bachelor's thesis, extending Jupy-Canvas — a Jupyter-notebook-based coding tool — with new capabilities.",
+      name: "Bachelor's Thesis - Jupy-Canvas Enhancements",
+      tech: ["TypeScript", "React", "SCSS"],
+      description: "My bachelor's thesis, contributing to Jupy-Canvas: a tool that reimagines Jupyter notebooks on an unlimited 2D canvas. Branch as much as you like, with each branch becoming its own independent kernel; organize kernels into groups connected through edges, with changes in a parent kernel automatically propagating to its children.",
       link: "",
     },
     {
       name: "Homelab & Self-Hosted Infrastructure",
       tech: ["???"],
-      description: "A personal homelab running self-hosted services — an ongoing sandbox for learning networking, infrastructure, and ops.",
+      description: "A personal homelab running self-hosted services - an ongoing sandbox for learning networking, infrastructure, and ops.",
       link: "",
     },
   ],
 
-  // "TALK TO NPC" — contact / social links. Leave a value "" to hide it.
+  // "TALK TO NPC" - contact / social links. Leave a value "" to hide it.
   contact: {
     email: "marko.cerkez@bluewin.ch",
     github: "https://github.com/markocerkez",
@@ -123,11 +123,11 @@ const SITE_DATA = {
   },
 
   footer: {
-    text: "Marko Cerkez — built pixel by pixel.",
+    text: "Marko Cerkez - built pixel by pixel.",
   },
 
-  // "PATCH NOTES" — a changelog for the site itself. Add a new entry
-  // (to the top of the array) whenever you update your portfolio — it's
+  // "PATCH NOTES" - a changelog for the site itself. Add a new entry
+  // (to the top of the array) whenever you update your portfolio - it's
   // a nice bit of flavor and doubles as a real log of what changed.
   patchNotes: [
     {
