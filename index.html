@@ -11,17 +11,17 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Marko Cerkez // Portfolio</title>
-<meta name="description" content="Marko Cerkez - portfolio quest log: education, work and projects, retro-game style." />
+<meta name="description" content="Marko Cerkez - portfolio: education, experience and projects, retro-game style." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://cerkez.ch/" />
 <meta property="og:title" content="Marko Cerkez - Portfolio" />
-<meta property="og:description" content="A retro, pixel-art portfolio - trainer card, quest log, world map, item bag and more." />
+<meta property="og:description" content="A retro, pixel-art portfolio - about, education, experience, projects and more." />
 <meta property="og:image" content="https://cerkez.ch/assets/og-image.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Marko Cerkez - Portfolio" />
-<meta name="twitter:description" content="A retro, pixel-art portfolio - trainer card, quest log, world map, item bag and more." />
+<meta name="twitter:description" content="A retro, pixel-art portfolio - about, education, experience, projects and more." />
 <meta name="twitter:image" content="https://cerkez.ch/assets/og-image.png" />
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -53,12 +53,12 @@
   </div>
   <div class="topbar__controls" id="topbar-controls">
     <nav class="menu" aria-label="Main menu">
-      <button data-target="about">TRAINER</button>
-      <button data-target="education">QUESTS</button>
-      <button data-target="work">WORK</button>
-      <button data-target="projects">ITEMS</button>
-      <button data-target="contact">TALK</button>
-      <button data-target="patches">PATCHES</button>
+      <button data-target="about">ABOUT</button>
+      <button data-target="education">EDUCATION</button>
+      <button data-target="work">EXPERIENCE</button>
+      <button data-target="projects">PROJECTS</button>
+      <button data-target="contact">CONTACT</button>
+      <button data-target="patches">CHANGELOG</button>
     </nav>
     <button id="map-toggle" class="icon-btn" title="Open the overworld map"><span class="icon-btn__icon" id="map-toggle-icon"></span> MAP</button>
     <button id="weather-toggle" class="icon-btn" title="Cycle the weather"><span class="icon-btn__icon" id="weather-icon"></span> <span id="weather-label">CLEAR</span></button>
@@ -93,7 +93,7 @@
   </section>
 
   <section id="about" class="panel">
-    <h2 class="panel__title"><span class="panel__title-badge">01</span> TRAINER CARD</h2>
+    <h2 class="panel__title"><span class="panel__title-badge">01</span> ABOUT ME</h2>
     <div class="trainer-card">
       <div class="trainer-card__portrait" id="trainer-portrait"></div>
       <div class="trainer-card__info">
@@ -117,23 +117,23 @@
   </section>
 
   <section id="education" class="panel panel--alt">
-    <h2 class="panel__title"><span class="panel__title-badge">02</span> QUEST LOG</h2>
+    <h2 class="panel__title"><span class="panel__title-badge">02</span> EDUCATION</h2>
     <div class="quest-log" id="quest-log"></div>
   </section>
 
   <section id="work" class="panel">
-    <h2 class="panel__title"><span class="panel__title-badge">03</span> WORLD MAP</h2>
+    <h2 class="panel__title"><span class="panel__title-badge">03</span> EXPERIENCE</h2>
     <div class="world-map" id="world-map"></div>
   </section>
 
   <section id="projects" class="panel panel--alt">
-    <h2 class="panel__title"><span class="panel__title-badge">04</span> ITEM BAG</h2>
+    <h2 class="panel__title"><span class="panel__title-badge">04</span> PROJECTS</h2>
     <p class="panel__hint">Hover or tap a chest to open it.</p>
     <div class="item-bag" id="item-bag"></div>
   </section>
 
   <section id="contact" class="panel contact">
-    <h2 class="panel__title"><span class="panel__title-badge">05</span> TALK TO NPC</h2>
+    <h2 class="panel__title"><span class="panel__title-badge">05</span> CONTACT</h2>
     <div class="npc-scene">
       <div class="npc-scene__mascot" id="npc-mascot"></div>
       <div class="dialog-box dialog-box--wide">
@@ -145,7 +145,7 @@
   </section>
 
   <section id="patches" class="panel panel--alt">
-    <h2 class="panel__title"><span class="panel__title-badge">06</span> PATCH NOTES</h2>
+    <h2 class="panel__title"><span class="panel__title-badge">06</span> CHANGELOG</h2>
     <h3 class="badge-shelf__title">ACHIEVEMENTS</h3>
     <div class="badge-shelf" id="badge-shelf"></div>
     <div class="patch-notes" id="patch-notes"></div>

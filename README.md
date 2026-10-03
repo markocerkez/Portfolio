@@ -25,7 +25,7 @@ Things worth knowing while filling it in:
   button. Leave it as `""` to hide the button - it's a placeholder path
   right now and will 404 until you add the file.
 - `patchNotes`: a changelog for the site itself, shown in its own
-  "Patch Notes" section. Add a new entry to the top of the array whenever
+  "Changelog" section. Add a new entry to the top of the array whenever
   you update your portfolio - fun flavor, and a real history of changes.
 
 ## Fun extras
@@ -57,7 +57,7 @@ Things worth knowing while filling it in:
 - Seven achievements (explore every section, open every chest, open the
   map, try all the weather, go full night owl, find the secret grove,
   and a bonus one for unlocking everything) are tracked in
-  `localStorage` and shown as a badge shelf in the Patch Notes section -
+  `localStorage` and shown as a badge shelf in the Changelog section -
   locked ones show as "???" until you earn them.
 - All motion (ambient background, weather, typewriter text, stars, boot
   screen, badge pop-ins) is disabled automatically for visitors with

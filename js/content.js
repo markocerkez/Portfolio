@@ -19,7 +19,7 @@ const SITE_DATA = {
     ],
   },
 
-  // "TRAINER CARD" - your about-me stat screen.
+  // "ABOUT ME" - your about-me stat screen.
   trainer: {
     photo: null, // e.g. "assets/avatar.png" for a real photo - leave null for the pixel-art portrait
     class: "SOFTWARE ENGINEER & JAVA TRAINER",
@@ -40,7 +40,7 @@ const SITE_DATA = {
     ],
   },
 
-  // "QUEST LOG" - education. status: "done" or "active".
+  // "EDUCATION" - status: "done" or "active".
   education: [
     {
       status: "done",
@@ -58,7 +58,7 @@ const SITE_DATA = {
     },
   ],
 
-  // "WORLD MAP" - work experience. icon: "briefcase" or "book".
+  // "EXPERIENCE" - work history. icon: "briefcase" or "book".
   work: [
     {
       icon: "briefcase",
@@ -85,7 +85,7 @@ const SITE_DATA = {
     },
   ],
 
-  // "ITEM BAG" - projects. Each one renders as a treasure chest card.
+  // "PROJECTS" - each one renders as a treasure chest card.
   // Add as many entries as you like; the grid wraps automatically.
   projects: [
     {
@@ -114,7 +114,7 @@ const SITE_DATA = {
     },
   ],
 
-  // "TALK TO NPC" - contact / social links. Leave a value "" to hide it.
+  // "CONTACT" - contact / social links. Leave a value "" to hide it.
   contact: {
     email: "marko.cerkez@bluewin.ch",
     github: "https://github.com/markocerkez",
@@ -126,7 +126,7 @@ const SITE_DATA = {
     text: "Marko Cerkez - built pixel by pixel.",
   },
 
-  // "PATCH NOTES" - a changelog for the site itself. Add a new entry
+  // "CHANGELOG" - a changelog for the site itself. Add a new entry
   // (to the top of the array) whenever you update your portfolio - it's
   // a nice bit of flavor and doubles as a real log of what changed.
   patchNotes: [

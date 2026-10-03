@@ -641,12 +641,12 @@
      Both only need to know the scroll position, so they share one
      rAF-gated listener instead of each registering their own. */
   const SECTION_LABELS = {
-    about: "TRAINER CARD",
-    education: "QUEST LOG",
-    work: "WORLD MAP",
-    projects: "ITEM BAG",
-    contact: "TALK TO NPC",
-    patches: "PATCH NOTES",
+    about: "ABOUT ME",
+    education: "EDUCATION",
+    work: "EXPERIENCE",
+    projects: "PROJECTS",
+    contact: "CONTACT",
+    patches: "CHANGELOG",
   };
   function wireScrollEffects() {
     const fill = $("#xp-fill");
@@ -718,12 +718,12 @@
     "gggtgggggtg",
   ];
   const MAP_PINS = [
-    { row: 1, col: 3, label: "01", target: "about", title: "Trainer Card" },
-    { row: 1, col: 7, label: "02", target: "education", title: "Quest Log" },
-    { row: 3, col: 8, label: "03", target: "work", title: "World Map" },
-    { row: 5, col: 5, label: "04", target: "projects", title: "Item Bag" },
-    { row: 5, col: 8, label: "05", target: "contact", title: "Talk to NPC" },
-    { row: 1, col: 5, label: "06", target: "patches", title: "Patch Notes" },
+    { row: 1, col: 3, label: "01", target: "about", title: "About Me" },
+    { row: 1, col: 7, label: "02", target: "education", title: "Education" },
+    { row: 3, col: 8, label: "03", target: "work", title: "Experience" },
+    { row: 5, col: 5, label: "04", target: "projects", title: "Projects" },
+    { row: 5, col: 8, label: "05", target: "contact", title: "Contact" },
+    { row: 1, col: 5, label: "06", target: "patches", title: "Changelog" },
   ];
 
   function renderMap() {
