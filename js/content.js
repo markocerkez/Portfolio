@@ -90,7 +90,7 @@ const SITE_DATA = {
   projects: [
     {
       name: "Info System",
-      tech: ["???"],
+      tech: ["Java", "Spring Boot", "TypeScript"],
       description: "A proof-of-concept information system built during my time at Digicomp Academy, from concept to implementation.",
       link: "", // GitHub/live link, or leave empty
     },

@@ -39,8 +39,6 @@ const PIXEL_PALETTE = {
   x: "#ff8f3c",
   // trainer portrait skin tone
   h: "#e8b894",
-  // trainer portrait shirt
-  c: "#3b6ea5",
 };
 
 function pixelSpriteSVG(rows, palette, pixelSize) {
@@ -284,82 +282,70 @@ const ICON_SNOWFLAKE = (() => {
   return grid.map((r) => r.join(""));
 })();
 
-/* Trainer card portrait: a bigger, more detailed pixel-art head+shoulders.
-   Hair, face and shoulders are unioned into ONE silhouette first (so only
-   the shape's true outer edges get outlined), then each region is
-   recolored — avoids the doubled black seam you'd get from outlining
-   hair and face as two separate shapes and stacking them. Eyebrows,
-   glasses, nose and beard are stamped on last as accents, same build-up
-   as the UI icons. */
+/* Trainer card portrait: a bust built from a few big, bold color regions
+   (hair+glasses-frame, face, beard) rather than lots of small 1px accents
+   — at the card's actual ~120px display size, fine detail (individual
+   eyebrow/nose/beard-texture pixels) reads as noise, while a few large,
+   high-contrast shapes read clearly as a face. All three regions are
+   unioned into ONE silhouette first (so only the shape's true outer edges
+   get outlined, see `paintFillRects`'s doc), then recolored, then the
+   lens windows / forehead / mouth gap are carved out of that solid color
+   last with plain overwrites. */
 const PORTRAIT_HAIR_RECTS = [
-  { x: 3, y: 0, w: 7, h: 1 },   // top peak
-  { x: 1, y: 1, w: 11, h: 3 },  // cap, flush with where the face starts
-  { x: 1, y: 4, w: 2, h: 2 },   // left sideburn
-  { x: 10, y: 4, w: 2, h: 2 },  // right sideburn
+  { x: 3, y: 0, w: 7, h: 1 },   // crown
+  { x: 1, y: 1, w: 11, h: 3 },  // main mass, rows 1-3
+  { x: 0, y: 3, w: 1, h: 1 },   // left poof — a little asymmetric flourish
+  { x: 12, y: 3, w: 1, h: 1 },  // right poof
 ];
-const PORTRAIT_FACE_RECTS = [
-  { x: 2, y: 4, w: 9, h: 7 },   // main face
-  { x: 1, y: 6, w: 1, h: 3 },   // left ear
-  { x: 11, y: 6, w: 1, h: 3 },  // right ear
-  { x: 3, y: 11, w: 7, h: 2 },  // jaw
-  { x: 5, y: 13, w: 3, h: 1 },  // chin
-  { x: 5, y: 14, w: 3, h: 1 },  // neck
+// One big skin block spans forehead, eye line and cheeks — the glasses
+// are drawn as a thin frame stamped on top afterward, not a separate
+// filled region, so there's no seam to cause a double outline.
+const PORTRAIT_FACE_RECTS = [{ x: 1, y: 4, w: 11, h: 7 }]; // rows 4-10
+const PORTRAIT_BEARD_RECTS = [
+  { x: 2, y: 11, w: 9, h: 1 },
+  { x: 2, y: 12, w: 9, h: 3 },
+  { x: 3, y: 15, w: 7, h: 1 },
+  { x: 4, y: 16, w: 5, h: 1 }, // chin tip
 ];
-const PORTRAIT_SHOULDER_RECTS = [{ x: 0, y: 15, w: 12, h: 5 }];
 const PORTRAIT_SILHOUETTE = rectUnionRows(
-  [...PORTRAIT_HAIR_RECTS, ...PORTRAIT_FACE_RECTS, ...PORTRAIT_SHOULDER_RECTS],
+  [...PORTRAIT_HAIR_RECTS, ...PORTRAIT_FACE_RECTS, ...PORTRAIT_BEARD_RECTS],
   "1",
   "k"
 );
 const PORTRAIT_BASE = paintFillRects(
   paintFillRects(
-    paintFillRects(PORTRAIT_SILHOUETTE, PORTRAIT_HAIR_RECTS, "1", "t"),
+    paintFillRects(PORTRAIT_SILHOUETTE, PORTRAIT_HAIR_RECTS, "1", "k"),
     PORTRAIT_FACE_RECTS,
     "1",
     "h"
   ),
-  PORTRAIT_SHOULDER_RECTS,
+  PORTRAIT_BEARD_RECTS,
   "1",
-  "c"
-);
-const PORTRAIT_BROWS_NOSE = withPixels(
-  PORTRAIT_BASE,
-  [
-    [3, 5], [4, 5], [5, 5], [7, 5], [8, 5], [9, 5], // eyebrows
-    [6, 8], [6, 9], // nose bridge/tip shadow
-  ],
-  "s"
+  "n"
 );
 const PORTRAIT_GLASSES = withPixels(
-  PORTRAIT_BROWS_NOSE,
+  PORTRAIT_BASE,
   [
-    // two lens rings + bridge. Centers are left bare for the final pass
-    // to fill with a bright "glare" so each ring reads as a ring.
-    [3, 6], [4, 6], [5, 6],
-    [3, 7], [5, 7],
-    [3, 8], [4, 8], [5, 8],
-    [7, 6], [8, 6], [9, 6],
-    [7, 7], [9, 7],
-    [7, 8], [8, 8], [9, 8],
+    // temple arms, poking past the face silhouette like real glasses do
+    [0, 7], [1, 7], [11, 7], [12, 7],
+    // left lens ring (interior stays skin — no glint, just an open frame)
+    [2, 6], [3, 6], [4, 6], [5, 6],
+    [2, 7], [5, 7],
+    [2, 8], [3, 8], [4, 8], [5, 8],
+    // right lens ring
+    [7, 6], [8, 6], [9, 6], [10, 6],
+    [7, 7], [10, 7],
+    [7, 8], [8, 8], [9, 8], [10, 8],
+    // bridge
     [6, 7],
   ],
   "k"
 );
-const PORTRAIT_BEARD = withPixels(
-  withPixels(
-    PORTRAIT_GLASSES,
-    [
-      [5, 10], [6, 10], [7, 10], // mustache
-      [3, 11], [4, 11], [5, 11], [6, 11], [7, 11], [8, 11], [9, 11],
-      [3, 12], [4, 12], [5, 12], [6, 12], [7, 12], [8, 12], [9, 12],
-      [5, 13], [6, 13], [7, 13], // chin
-    ],
-    "n"
-  ),
-  [[4, 12], [8, 12], [6, 13]], // beard shading for a bit of texture
-  "s"
+const PORTRAIT_HEAD = withPixels(
+  PORTRAIT_GLASSES,
+  [[5, 13], [6, 13], [7, 13]], // a thin mouth gap in the beard
+  "h"
 );
-const PORTRAIT_WITH_LENSES = withPixels(PORTRAIT_BEARD, [[4, 7], [8, 7]], "w");
 
 const SPRITES = {
   blobIdle: [
@@ -464,7 +450,7 @@ const SPRITES = {
   iconEnvelope: ICON_ENVELOPE,
   iconRainCloud: ICON_RAIN_CLOUD,
   iconSnowflake: ICON_SNOWFLAKE,
-  trainerPortrait: PORTRAIT_WITH_LENSES,
+  trainerPortrait: PORTRAIT_HEAD,
   moon: [
     "..kkkk..",
     ".kwwwwk.",
