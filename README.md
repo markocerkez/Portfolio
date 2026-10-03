@@ -103,7 +103,12 @@ once DNS is correct. (It went missing once already — restored it.)
    takes a few minutes to a few hours to issue after GitHub can verify
    the domain.
 
-### 2. Hostpoint side (your registrar)
+### 2. DNS — pick ONE of these, not both
+
+Both point the same domain at the same GitHub Pages site. The
+difference is who answers DNS queries for `cerkez.ch`.
+
+#### Option A — Hostpoint manages DNS directly (simpler)
 
 1. Log into the **Hostpoint Control Panel** → **Domains** →
    **Edit DNS zone** for `cerkez.ch`.
@@ -129,18 +134,63 @@ once DNS is correct. (It went missing once already — restored it.)
    fine (that's normal for GitHub Pages, which needs all four), but don't
    leave an old unrelated IP in there too.
 
+#### Option B — Cloudflare in front (CDN + DDoS protection, still free)
+
+Hostpoint stays the *registrar* (where the domain is bought/renewed);
+Cloudflare takes over *answering DNS queries* for it, and optionally
+proxies traffic through its CDN. Domain registration and DNS hosting
+are separate things — moving DNS to Cloudflare doesn't move the
+registration.
+
+1. **Add the site to Cloudflare**: dashboard → Add a Site → `cerkez.ch`
+   → pick the Free plan. Cloudflare scans existing DNS and shows you
+   two nameservers to use (something like `xxx.ns.cloudflare.com` /
+   `yyy.ns.cloudflare.com` — yours will differ).
+2. **At Hostpoint**: Control Panel → Domains → find `cerkez.ch`'s
+   nameserver settings (separate from "Edit DNS zone" — look for
+   "Nameserver" / "Nameserver verwalten") and replace Hostpoint's
+   nameservers with the two Cloudflare gave you. This handover can take
+   anywhere from minutes to ~24h to fully propagate worldwide.
+3. **In Cloudflare DNS**, add the same records as Option A above (A × 4
+   to the GitHub IPs, optional AAAA × 4, optional CNAME for `www`) —
+   but set every one of them to **DNS only** (grey cloud, not orange)
+   for now. This matters: GitHub needs to see the real GitHub IPs to
+   verify the domain and issue the HTTPS certificate; Cloudflare's
+   proxy (orange cloud) would hide them behind Cloudflare's own IPs and
+   that verification fails.
+4. **In Cloudflare → SSL/TLS**, set the encryption mode to **Full**
+   (not "Flexible" — Flexible causes an infinite redirect loop with
+   GitHub Pages specifically, a well-known gotcha with this combo).
+5. Wait for the nameserver handover (step 2) to finish — Cloudflare
+   emails you / shows "Active" in the dashboard once it has. *Then* go
+   finish step 1.3 above (tick Enforce HTTPS on GitHub once available).
+6. **Once GitHub's certificate is issued and HTTPS works**, go back to
+   Cloudflare DNS and switch the A/AAAA records to **Proxied** (orange
+   cloud) to actually get the CDN/caching/DDoS-protection benefit. Set
+   SSL/TLS mode to **Full (strict)** at that point, since GitHub's
+   certificate is now valid and Cloudflare can verify it properly.
+
+Skipping the "DNS only first, Proxied later" order is the single most
+common way this setup breaks — do it in that sequence.
+
 ### 3. Wait and verify
 
 DNS changes can take anywhere from a few minutes to a few hours to
-propagate. To check without waiting blindly:
+propagate (nameserver changes for Option B on the longer end of that).
+To check without waiting blindly:
 
 ```bash
 dig cerkez.ch +short
-# should eventually list the four 185.199.10x.153 addresses
+# Option A: should eventually list the four 185.199.10x.153 addresses
+# Option B once proxied: lists Cloudflare's IPs instead — that's correct,
+# it means the proxy is active
+
+dig cerkez.ch NS +short
+# Option B: should eventually list your two cloudflare.com nameservers
 ```
 
 Once that resolves correctly, `https://cerkez.ch` should load the site
-(it may show a GitHub Pages "not secure" warning for a bit until the
+(it may show a "not secure" warning for a bit until the GitHub
 certificate from step 1.3 finishes issuing — that's expected, not a
 sign something's wrong). Until then, `https://markocerkez.github.io/Portfolio/`
 keeps working regardless of DNS.
