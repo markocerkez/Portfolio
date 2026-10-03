@@ -10,32 +10,33 @@ const SITE_DATA = {
   meta: {
     // Shown in the browser tab and at the very top of the page.
     name: "MARKO CERKEZ",
-    role: "??? Software Engineer // Java Instructor",
+    role: "Software Engineer // Java Trainer",
     tagline: "A WILD DEVELOPER APPEARED!",
     // One or two short lines for the hero "intro box".
     introLines: [
-      "??? Hi, I'm Marko — welcome to my portfolio.",
-      "??? Scroll down to see my quests, items & stats.",
+      "Hi, I'm Marko — Software Engineer and Java Trainer based in Switzerland.",
+      "Scroll down to see my quests, items & stats.",
     ],
   },
 
   // "TRAINER CARD" — your about-me stat screen.
   trainer: {
-    photo: null, // e.g. "assets/avatar.png" — leave null to keep the blob mascot
-    class: "??? FULL-STACK DEVELOPER",
-    location: "??? Switzerland",
-    bio: "??? Write 2-3 sentences about yourself here: who you are, what you're into, what you're working on right now.",
+    photo: null, // e.g. "assets/avatar.png" for a real photo — leave null for the pixel-art portrait
+    class: "SOFTWARE ENGINEER & JAVA TRAINER",
+    location: "Lenzburg, Switzerland",
+    bio: "Ambitious software engineer with a passion for clean code, solving tricky problems, and teaching others how to do the same. Outside of work I'm usually 3D-printing prototypes, tinkering with my homelab, or training my dog.",
     // Path to your CV/resume PDF — drop the file into assets/ and point this
     // at it. Leave as "" to hide the "Get Scroll of Resume" button entirely.
-    resumeUrl: "assets/resume.pdf",
-    // Skill bars, 0-100. Add/remove as many as you like.
+    resumeUrl: "assets/resume.pdf", // currently the German CV — swap in an English one whenever you have it
+    // Skill bars, 0-100. Rough estimates from your CV's skill bars —
+    // tweak freely, these were never meant to be exact.
     stats: [
-      { label: "JAVA", value: 0 },
-      { label: "SPRING", value: 0 },
-      { label: "SQL", value: 0 },
-      { label: "JAVASCRIPT", value: 0 },
-      { label: "GIT", value: 0 },
-      { label: "TEACHING", value: 0 },
+      { label: "JAVA", value: 85 },
+      { label: "PYTHON", value: 80 },
+      { label: "JAVASCRIPT", value: 70 },
+      { label: "TYPESCRIPT", value: 65 },
+      { label: "SQL", value: 60 },
+      { label: "RUST", value: 25 },
     ],
   },
 
@@ -43,17 +44,24 @@ const SITE_DATA = {
   education: [
     {
       status: "done",
-      title: "??? Bachelor of Science in ???",
-      place: "??? University / School name",
-      period: "??? 20XX",
-      notes: "??? One line about your thesis, focus or honors.",
+      title: "Bachelor — started in Electrical Engineering & IT",
+      place: "ETH Zürich",
+      period: "2021 – 2022",
+      notes: "Completed the first year before transferring to the University of Zürich to focus on software.",
+    },
+    {
+      status: "done",
+      title: "Bachelor of Science in Software Systems",
+      place: "University of Zürich",
+      period: "2022 – 2025",
+      notes: "Foundations in software engineering, algorithms, and systems design.",
     },
     {
       status: "active",
-      title: "??? Master of Science in ???",
-      place: "??? University / School name",
-      period: "??? 20XX – present",
-      notes: "??? One line about your focus area or thesis topic.",
+      title: "Master of Science in Software Systems",
+      place: "University of Zürich",
+      period: "2025 – present",
+      notes: "Deepening expertise in software systems engineering.",
     },
   ],
 
@@ -61,18 +69,26 @@ const SITE_DATA = {
   work: [
     {
       icon: "briefcase",
-      role: "??? Your Job Title",
-      company: "??? Company name",
-      period: "??? 20XX – present",
-      description: "??? What you do day to day, in a sentence or two.",
+      role: "Software Engineer",
+      company: "Sobrado Software AG",
+      period: "Feb 2026 – present",
+      description: "Building and maintaining software as part of the engineering team.",
     },
     {
       icon: "book",
-      role: "Java Instructor",
+      role: "Java Trainer",
       company: "Digicomp Academy AG",
-      period: "??? 20XX – present",
+      period: "Mar 2026 – present",
       description:
-        "??? Teaching Java courses at Digicomp Academy AG — add details on who you teach, which courses, or anything you're proud of.",
+        "Teaching Java courses at Digicomp Academy AG. Previously spent almost 3 years there as Technical Service Supporter (hardware/software setup, network monitoring, course-room tech support) before moving into training.",
+    },
+    {
+      icon: "briefcase",
+      role: "Software Engineer",
+      company: "ATEGRA Software Engineering",
+      period: "Nov 2025 – Feb 2026",
+      description:
+        "Supported and maintained software for public-sector clients — user administration, infrastructure monitoring, and direct client support.",
     },
   ],
 
@@ -80,15 +96,15 @@ const SITE_DATA = {
   // Add as many entries as you like; the grid wraps automatically.
   projects: [
     {
-      name: "??? Project One",
-      tech: ["Java", "???"],
-      description: "??? Short description of what this project does.",
+      name: "Training Center Info System (POC)",
+      tech: ["???"],
+      description: "A proof-of-concept information system built during my time at Digicomp Academy, from concept to implementation.",
       link: "", // GitHub/live link, or leave empty
     },
     {
-      name: "??? Project Two",
+      name: "Homelab & Self-Hosted Infrastructure",
       tech: ["???"],
-      description: "??? Short description of what this project does.",
+      description: "A personal homelab running self-hosted services — an ongoing sandbox for learning networking, infrastructure, and ops.",
       link: "",
     },
     {
@@ -107,15 +123,14 @@ const SITE_DATA = {
 
   // "TALK TO NPC" — contact / social links. Leave a value "" to hide it.
   contact: {
-    email: "",
+    email: "marko.cerkez@bluewin.ch",
     github: "https://github.com/markocerkez",
     linkedin: "",
-    message:
-      "??? Want to team up, hire me, or just say hi? Reach out below!",
+    message: "Want to team up, hire me, or just say hi? Reach out below!",
   },
 
   footer: {
-    text: "??? Marko Cerkez — built pixel by pixel.",
+    text: "Marko Cerkez — built pixel by pixel.",
   },
 
   // "PATCH NOTES" — a changelog for the site itself. Add a new entry

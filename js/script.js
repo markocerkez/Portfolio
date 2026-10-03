@@ -145,7 +145,7 @@
     if (t.photo) {
       portrait.innerHTML = `<img src="${t.photo}" alt="${SITE_DATA.meta.name}">`;
     } else {
-      portrait.innerHTML = sprite("blobIdle", 7);
+      portrait.innerHTML = sprite("trainerPortrait", 7);
     }
     $("#trainer-name").textContent = SITE_DATA.meta.name;
     $("#trainer-class").textContent = t.class;

@@ -37,6 +37,8 @@ const PIXEL_PALETTE = {
   z: "#2f8fd4", // water dark
   // butterfly wing
   x: "#ff8f3c",
+  // trainer portrait skin tone
+  h: "#e8b894",
 };
 
 function pixelSpriteSVG(rows, palette, pixelSize) {
@@ -103,6 +105,28 @@ function withPixels(rows, points, ch) {
   const grid = rows.map((r) => r.split(""));
   points.forEach(([x, y]) => {
     if (grid[y] && x >= 0 && x < grid[y].length) grid[y][x] = ch;
+  });
+  return grid.map((r) => r.join(""));
+}
+
+/* Stacks `top` on `base` (non-"." cells of top win), padding both to a
+   shared size first. Used to build a sprite out of separate shapes — a
+   hair cap over a face, say — without hand-merging grids by eye. */
+function layerSprites(base, top, offsetX, offsetY) {
+  offsetX = offsetX || 0;
+  offsetY = offsetY || 0;
+  const h = Math.max(base.length, top.length + offsetY);
+  const w = Math.max(
+    base.reduce((m, r) => Math.max(m, r.length), 0),
+    top.reduce((m, r) => Math.max(m, r.length), 0) + offsetX
+  );
+  const grid = Array.from({ length: h }, (_, y) =>
+    Array.from({ length: w }, (_, x) => (base[y] && base[y][x]) || ".")
+  );
+  top.forEach((row, y) => {
+    row.split("").forEach((ch, x) => {
+      if (ch !== ".") grid[y + offsetY][x + offsetX] = ch;
+    });
   });
   return grid.map((r) => r.join(""));
 }
@@ -239,6 +263,55 @@ const ICON_SNOWFLAKE = (() => {
   return grid.map((r) => r.join(""));
 })();
 
+/* Trainer card portrait: a pixel-art head (glasses + short beard) built
+   from a face shape with a hair cap layered on top, then glasses and a
+   beard stamped on as accents — same build-up as the UI icons. */
+const PORTRAIT_FACE = rectUnionRows(
+  [
+    { x: 3, y: 3, w: 7, h: 1 },
+    { x: 1, y: 4, w: 11, h: 6 },
+    { x: 2, y: 10, w: 9, h: 2 },
+    { x: 4, y: 12, w: 5, h: 1 },
+  ],
+  "h",
+  "k"
+);
+const PORTRAIT_HAIR = rectUnionRows(
+  [
+    { x: 2, y: 0, w: 9, h: 2 },
+    { x: 1, y: 2, w: 11, h: 2 },
+  ],
+  "t",
+  "k"
+);
+const PORTRAIT = withPixels(
+  withPixels(
+    layerSprites(PORTRAIT_FACE, PORTRAIT_HAIR),
+    // beard — a brown shade so it reads as a beard, not more black outline
+    [
+      [2, 9], [3, 9], [4, 9], [5, 9], [6, 9], [7, 9], [8, 9], [9, 9], [10, 9],
+      [2, 10], [3, 10], [4, 10], [5, 10], [6, 10], [7, 10], [8, 10], [9, 10], [10, 10],
+      [4, 12], [5, 12], [6, 12], [7, 12], [8, 12],
+    ],
+    "n"
+  ),
+  [
+    // glasses: two lens rings + bridge, drawn after the beard so they
+    // stay crisp black on top. Lens centers are left for the next pass
+    // to fill with a bright "glare" so the ring reads as a ring instead
+    // of a solid block.
+    [3, 5], [4, 5], [5, 5],
+    [3, 6], [5, 6],
+    [3, 7], [4, 7], [5, 7],
+    [8, 5], [9, 5], [10, 5],
+    [8, 6], [10, 6],
+    [8, 7], [9, 7], [10, 7],
+    [6, 6], [7, 6],
+  ],
+  "k"
+);
+const PORTRAIT_WITH_LENSES = withPixels(PORTRAIT, [[4, 6], [9, 6]], "w");
+
 const SPRITES = {
   blobIdle: [
     ".....kkkkkk.....",
@@ -342,6 +415,7 @@ const SPRITES = {
   iconEnvelope: ICON_ENVELOPE,
   iconRainCloud: ICON_RAIN_CLOUD,
   iconSnowflake: ICON_SNOWFLAKE,
+  trainerPortrait: PORTRAIT_WITH_LENSES,
   moon: [
     "..kkkk..",
     ".kwwwwk.",
