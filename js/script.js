@@ -193,7 +193,7 @@
           <p class="quest__place">${edu.place} - ${edu.period}</p>
           <p class="quest__notes">${edu.notes}</p>
         </div>
-        <div class="quest__status">${done ? "QUEST COMPLETE" : "IN PROGRESS"}</div>`;
+        <div class="quest__status">${done ? "COMPLETED" : "IN PROGRESS"}</div>`;
       wrap.appendChild(div);
     });
   }
