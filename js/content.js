@@ -131,6 +131,15 @@ const SITE_DATA = {
   // a nice bit of flavor and doubles as a real log of what changed.
   patchNotes: [
     {
+      version: "v1.4",
+      notes: [
+        "Filled in real content everywhere: trainer card, education, work history and projects now show the real info instead of placeholders.",
+        "Weather now actually changes the landscape - rain and snow reskin the sky, ground and trees instead of just adding falling drops on top.",
+        "Night mode is now a full site-wide dark theme instead of only changing the hero background.",
+        "Renamed every section to a plain, CV-style title, and gave the trainer portrait a proper head-and-shoulders redesign.",
+      ],
+    },
+    {
       version: "v1.3",
       notes: [
         "Added a day/night cycle, typewriter dialogue, and toggleable weather.",
