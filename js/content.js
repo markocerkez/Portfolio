@@ -116,7 +116,7 @@ const SITE_DATA = {
 
   // "CONTACT" - contact / social links. Leave a value "" to hide it.
   contact: {
-    email: "marko.cerkez@bluewin.ch",
+    email: "marko@cerkez.ch",
     github: "https://github.com/markocerkez",
     linkedin: "https://www.linkedin.com/in/marko.cerkez",
     message: "Want to team up, hire me, or just say hi? Reach out below!",
