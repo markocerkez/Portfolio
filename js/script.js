@@ -265,6 +265,38 @@
     $("#footer-text").textContent = SITE_DATA.footer.text;
   }
 
+  /* ---------- SEO: JSON-LD Person schema ----------
+     Built from SITE_DATA rather than hand-written in index.html, so
+     content.js stays the one file to edit - see its own header comment. */
+  function renderStructuredData() {
+    const t = SITE_DATA.trainer;
+    const c = SITE_DATA.contact;
+    const [locality, country] = t.location.split(",").map((s) => s.trim());
+    const currentJob = SITE_DATA.work.find((w) => /present/i.test(w.period));
+    const schools = [...new Set(SITE_DATA.education.map((e) => e.place))];
+    const person = {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      name: "Marko Cerkez",
+      jobTitle: t.class,
+      description: t.bio,
+      url: "https://cerkez.ch/",
+      email: c.email ? `mailto:${c.email}` : undefined,
+      sameAs: [c.github, c.linkedin].filter(Boolean),
+      address: locality
+        ? { "@type": "PostalAddress", addressLocality: locality, addressCountry: country || undefined }
+        : undefined,
+      alumniOf: schools.map((name) => ({ "@type": "CollegeOrUniversity", name })),
+      worksFor: currentJob ? { "@type": "Organization", name: currentJob.company } : undefined,
+    };
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    // JSON.stringify drops keys whose value is undefined, so the
+    // optional fields above just vanish instead of serializing as null.
+    script.textContent = JSON.stringify(person);
+    document.head.appendChild(script);
+  }
+
   let contactTyped = false;
   async function typeContactText() {
     if (contactTyped) return;
@@ -919,6 +951,7 @@
     renderProjects();
     renderContact();
     renderPatchNotes();
+    renderStructuredData();
     wireNav();
     wireMenuToggle();
     wireReveal();
