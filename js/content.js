@@ -131,6 +131,14 @@ const SITE_DATA = {
   // a nice bit of flavor and doubles as a real log of what changed.
   patchNotes: [
     {
+      version: "v1.5",
+      notes: [
+        "The whole site now speaks German too - switch with the LANG button (it starts in your browser's language).",
+        "Added Blob Catch, a 20-second mini-game hidden behind the map. Score 10 to earn a badge.",
+        "Added a developer mode for anyone who types the right command. Two new achievements to find.",
+      ],
+    },
+    {
       version: "v1.4",
       notes: [
         "Weather now actually changes the landscape - rain and snow reskin the sky, ground and trees instead of just adding falling drops on top.",

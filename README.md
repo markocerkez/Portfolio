@@ -28,6 +28,15 @@ Things worth knowing while filling it in:
   "Changelog" section. Add a new entry to the top of the array whenever
   you update your portfolio - fun flavor, and a real history of changes.
 
+## Languages (EN / DE)
+
+English text lives in `js/content.js`; `js/i18n.js` holds the German
+overrides (`SITE_DATA_DE`, same order/length as the English arrays) and
+the UI strings. The LANG button switches and remembers the choice; first
+visit follows the browser language. To translate a new field, add it to
+`SITE_DATA_DE`; for new static HTML text add `data-i18n="key"` and a key
+in both `I18N.en` and `I18N.de`.
+
 ## Fun extras
 
 - The **MAP** button in the top bar opens a small overworld-style map
@@ -209,3 +218,8 @@ js/content.js      <- YOUR CONTENT GOES HERE
 js/script.js       renders content.js into the page, wires up interactions
 assets/            put photos/images you reference from content.js here
 ```
+
+## Secrets
+
+Beyond the Konami code and mascot taps: type `sudo` for a developer HUD,
+and open the MAP for a hidden mini-game (Blob Catch).

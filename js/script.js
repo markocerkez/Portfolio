@@ -14,6 +14,37 @@
   }
 
   let shinyMode = false;
+
+  /* ---------- language ----------
+     SITE_DATA (English) is the source of truth; D is SITE_DATA with the
+     active language's overrides from i18n.js merged on top. Every render
+     function reads D and tr(), so switching language is just "set D,
+     re-render". */
+  let lang = "en";
+  let D = SITE_DATA;
+  const tr = (key) => I18N[lang][key];
+  function mergeData(base, over) {
+    if (over === undefined) return base;
+    if (Array.isArray(base)) {
+      // arrays of plain strings (intro lines, patch notes) are replaced wholesale
+      if (!Array.isArray(over) || typeof base[0] !== "object") return over;
+      return Array.from({ length: Math.max(base.length, over.length) }, (_, i) => mergeData(base[i], over[i]));
+    }
+    if (base && typeof base === "object") {
+      const out = Object.assign({}, base);
+      for (const k in over) out[k] = mergeData(base[k], over[k]);
+      return out;
+    }
+    return over;
+  }
+  function setLang(next) {
+    lang = I18N[next] ? next : "en";
+    D = lang === "de" ? mergeData(SITE_DATA, SITE_DATA_DE) : SITE_DATA;
+    document.documentElement.lang = lang;
+  }
+  function achText(a) {
+    return (lang === "de" && ACHIEVEMENTS_DE[a.id]) || a;
+  }
   // Reassigned by wireMenuToggle(); lets wireNav() collapse the mobile
   // drawer before scrolling (see wireNav for why that ordering matters).
   let closeMobileMenuInstant = function () {};
@@ -42,6 +73,8 @@
      fills the text for anyone who prefers reduced motion. */
   function typewriter(el, text, speed) {
     return new Promise((resolve) => {
+      // Setting el._tw = null (or starting another typewriter on el) cancels this one.
+      const token = (el._tw = {});
       if (prefersReducedMotion()) {
         el.textContent = text;
         resolve();
@@ -50,6 +83,7 @@
       el.textContent = "";
       let i = 0;
       (function step() {
+        if (el._tw !== token) return resolve();
         el.textContent += text[i];
         i++;
         if (i < text.length) setTimeout(step, speed || 28);
@@ -129,44 +163,66 @@
     ground.before(scenery);
 
     $("#hero-mascot").innerHTML = sprite("blobIdle", 8);
-    $("#hero-name").textContent = SITE_DATA.meta.name;
-    $("#hero-role").textContent = SITE_DATA.meta.role;
+    $("#hero-name").textContent = D.meta.name;
+    $("#hero-role").textContent = D.meta.role;
     $("#hero-intro-lines").innerHTML = "";
   }
 
   /* Types the hero dialogue box out, tagline first then each intro line,
      then reveals the "waiting for input" cursor. */
+  let heroRun = 0;
   async function typeHeroText() {
-    await typewriter($("#hero-tagline"), SITE_DATA.meta.tagline, 32);
+    const run = ++heroRun;
     const introWrap = $("#hero-intro-lines");
-    for (const line of SITE_DATA.meta.introLines) {
+    introWrap.innerHTML = "";
+    await typewriter($("#hero-tagline"), D.meta.tagline, 32);
+    for (const line of D.meta.introLines) {
+      if (run !== heroRun) return;
       const p = document.createElement("p");
       introWrap.appendChild(p);
       await typewriter(p, line, 20);
     }
+    if (run !== heroRun) return;
+    $("#hero-dialog .dialog-box__cursor").classList.add("is-ready");
+  }
+  /* Language switch: skip the typing and show the whole dialogue at once. */
+  function renderHeroText() {
+    heroRun++;
+    $("#hero-role").textContent = D.meta.role;
+    const tag = $("#hero-tagline");
+    tag._tw = null;
+    tag.textContent = D.meta.tagline;
+    const wrap = $("#hero-intro-lines");
+    wrap.innerHTML = "";
+    D.meta.introLines.forEach((line) => {
+      const p = document.createElement("p");
+      p.textContent = line;
+      wrap.appendChild(p);
+    });
     $("#hero-dialog .dialog-box__cursor").classList.add("is-ready");
   }
 
   /* ---------- trainer card ---------- */
   function renderTrainer() {
-    const t = SITE_DATA.trainer;
+    const t = D.trainer;
     const portrait = $("#trainer-portrait");
     if (t.photo) {
-      portrait.innerHTML = `<img src="${t.photo}" alt="${SITE_DATA.meta.name}">`;
+      portrait.innerHTML = `<img src="${t.photo}" alt="${D.meta.name}">`;
     } else {
       portrait.innerHTML = sprite("trainerPortrait", 3.5);
     }
-    $("#trainer-name").textContent = SITE_DATA.meta.name;
+    $("#trainer-name").textContent = D.meta.name;
     $("#trainer-class").textContent = t.class;
     $("#trainer-location").textContent = t.location;
     $("#trainer-bio").textContent = t.bio;
 
     const resumeWrap = $("#trainer-resume");
     resumeWrap.innerHTML = t.resumeUrl
-      ? `<a class="key-item" href="${t.resumeUrl}" download><span class="icon-btn__icon">${sprite("iconScroll", 3)}</span> GET SCROLL OF RESUME</a>`
+      ? `<a class="key-item" href="${t.resumeUrl}" download><span class="icon-btn__icon">${sprite("iconScroll", 3)}</span> ${tr("resume")}</a>`
       : "";
 
     const statsWrap = $("#trainer-stats");
+    if (statsWrap.children.length) return; // skill bars are language-neutral; keep their fill animation
     statsWrap.innerHTML = "";
     t.stats.forEach((s) => {
       const div = document.createElement("div");
@@ -182,7 +238,7 @@
   function renderEducation() {
     const wrap = $("#quest-log");
     wrap.innerHTML = "";
-    SITE_DATA.education.forEach((edu) => {
+    D.education.forEach((edu) => {
       const done = edu.status === "done";
       const div = document.createElement("div");
       div.className = "quest " + (done ? "quest--done" : "quest--active");
@@ -193,7 +249,7 @@
           <p class="quest__place">${edu.place} - ${edu.period}</p>
           <p class="quest__notes">${edu.notes}</p>
         </div>
-        <div class="quest__status">${done ? "COMPLETED" : "IN PROGRESS"}</div>`;
+        <div class="quest__status">${done ? tr("done") : tr("progress")}</div>`;
       wrap.appendChild(div);
     });
   }
@@ -203,7 +259,7 @@
     const wrap = $("#world-map");
     wrap.innerHTML = "";
     const icons = { briefcase: "iconBriefcase", book: "iconBook" };
-    SITE_DATA.work.forEach((job) => {
+    D.work.forEach((job) => {
       const div = document.createElement("div");
       div.className = "location";
       div.innerHTML = `
@@ -217,19 +273,19 @@
   }
 
   /* ---------- item bag (projects) ---------- */
+  const opened = new Set(); // chests hovered so far - survives a language re-render
   function renderProjects() {
     const wrap = $("#item-bag");
     wrap.innerHTML = "";
     const closed = sprite("chestClosed", 4);
     const open = sprite("chestOpen", 4);
-    const opened = new Set();
-    SITE_DATA.projects.forEach((p, i) => {
+    D.projects.forEach((p, i) => {
       const div = document.createElement("div");
       div.className = "item";
       div.tabIndex = 0;
       const techHtml = (p.tech || []).map((t) => `<span>${t}</span>`).join("");
       const linkHtml = p.link
-        ? `<a class="item__link" href="${p.link}" target="_blank" rel="noopener">OPEN ▸</a>`
+        ? `<a class="item__link" href="${p.link}" target="_blank" rel="noopener">${tr("open")}</a>`
         : "";
       div.innerHTML = `
         <div class="item__chest">
@@ -242,7 +298,7 @@
         ${linkHtml}`;
       const markOpened = () => {
         opened.add(i);
-        if (opened.size >= SITE_DATA.projects.length) unlockAchievement("treasure_hunter");
+        if (opened.size >= D.projects.length) unlockAchievement("treasure_hunter");
       };
       div.addEventListener("mouseenter", () => {
         playBlip(880);
@@ -255,14 +311,14 @@
 
   /* ---------- contact ---------- */
   function renderContact() {
-    $("#npc-mascot").innerHTML = sprite("blobIdle", 7);
+    if (!$("#npc-mascot").firstChild) $("#npc-mascot").innerHTML = sprite("blobIdle", 7);
     const links = $("#contact-links");
     links.innerHTML = "";
-    const c = SITE_DATA.contact;
+    const c = D.contact;
     if (c.email) links.innerHTML += `<a href="mailto:${c.email}"><span class="icon-btn__icon">${sprite("iconEnvelope", 2)}</span> EMAIL</a>`;
     if (c.github) links.innerHTML += `<a href="${c.github}" target="_blank" rel="noopener">GITHUB</a>`;
     if (c.linkedin) links.innerHTML += `<a href="${c.linkedin}" target="_blank" rel="noopener">LINKEDIN</a>`;
-    $("#footer-text").textContent = SITE_DATA.footer.text;
+    $("#footer-text").textContent = D.footer.text;
   }
 
   /* ---------- SEO: JSON-LD Person schema ----------
@@ -301,7 +357,7 @@
   async function typeContactText() {
     if (contactTyped) return;
     contactTyped = true;
-    await typewriter($("#contact-message"), SITE_DATA.contact.message, 22);
+    await typewriter($("#contact-message"), D.contact.message, 22);
     $("#contact .dialog-box__cursor").classList.add("is-ready");
   }
 
@@ -309,7 +365,7 @@
   function renderPatchNotes() {
     const wrap = $("#patch-notes");
     wrap.innerHTML = "";
-    SITE_DATA.patchNotes.forEach((p) => {
+    D.patchNotes.forEach((p) => {
       const div = document.createElement("div");
       div.className = "patch";
       const items = p.notes.map((n) => `<li>${n}</li>`).join("");
@@ -326,6 +382,8 @@
     { id: "weather_watcher", title: "Weather Watcher", desc: "Try every kind of weather.", icon: "cloud:medium" },
     { id: "night_owl", title: "Night Owl", desc: "Switch to night mode.", icon: "moon" },
     { id: "secret_grove", title: "Secret Grove", desc: "Find the hidden easter egg.", icon: "leaf" },
+    { id: "root_access", title: "Root Access", desc: "Open developer mode.", icon: "iconScroll" },
+    { id: "blob_catcher", title: "Blob Catcher", desc: "Score 10 or more in Blob Catch.", icon: "blobIdle" },
     { id: "completionist", title: "Completionist", desc: "Unlock every other achievement.", icon: "badgeTrophy" },
   ];
   /* icon is a SPRITES name, or "cloud:<name>" for a CLOUDS entry */
@@ -348,15 +406,16 @@
     const wrap = $("#badge-shelf");
     if (!wrap) return;
     wrap.innerHTML = "";
-    ACHIEVEMENTS.forEach((a) => {
+    ACHIEVEMENTS.forEach((a0) => {
+      const a = achText(a0);
       const unlocked = unlockedAchievements.has(a.id);
       const div = document.createElement("div");
       div.className = "badge " + (unlocked ? "is-unlocked" : "is-locked");
-      const iconSvg = unlocked ? badgeIconSVG(a.icon) : sprite("badgeLocked", 4);
+      const iconSvg = unlocked ? badgeIconSVG(a0.icon) : sprite("badgeLocked", 4);
       div.innerHTML = `
         <span class="badge__icon">${iconSvg}</span>
         <span class="badge__title">${unlocked ? a.title : "???"}</span>
-        <p class="badge__desc">${unlocked ? a.desc : "Hidden until unlocked."}</p>`;
+        <p class="badge__desc">${unlocked ? a.desc : tr("locked")}</p>`;
       wrap.appendChild(div);
     });
   }
@@ -367,7 +426,8 @@
     saveAchievements();
     const a = ACHIEVEMENTS.find((x) => x.id === id);
     if (a && !opts.silent) {
-      showToast(`ACHIEVEMENT UNLOCKED\n${a.title} - ${a.desc}`);
+      const text = achText(a);
+      showToast(`${tr("ach_unlocked")}\n${text.title} - ${text.desc}`);
       playBlip(988);
       setTimeout(() => playBlip(1318), 120);
     }
@@ -519,11 +579,14 @@
       /* audio not available - silently ignore */
     }
   }
+  function refreshSoundLabel() {
+    $("#sound-toggle").textContent = tr("sfx") + (soundOn ? tr("on") : tr("off"));
+  }
   function wireSound() {
     const btn = $("#sound-toggle");
     btn.addEventListener("click", () => {
       soundOn = !soundOn;
-      btn.textContent = "SFX: " + (soundOn ? "ON" : "OFF");
+      refreshSoundLabel();
       btn.setAttribute("aria-pressed", String(soundOn));
       if (soundOn) playBlip(660);
     });
@@ -547,12 +610,12 @@
     if (theme === "night") {
       document.documentElement.setAttribute("data-theme", "night");
       $("#theme-icon").innerHTML = sprite("iconSun", 2);
-      $("#theme-label").textContent = "DAY";
+      $("#theme-label").textContent = tr("day");
       unlockAchievement("night_owl");
     } else {
       document.documentElement.removeAttribute("data-theme");
       $("#theme-icon").innerHTML = sprite("moon", 2);
-      $("#theme-label").textContent = "NIGHT";
+      $("#theme-label").textContent = tr("night");
     }
   }
 
@@ -572,12 +635,13 @@
   }
 
   /* ---------- weather ---------- */
+  let refreshWeatherLabel = function () {};
   function wireWeather() {
     const states = ["clear", "rain", "snow"];
     const meta = {
-      clear: { icon: "iconSun", label: "CLEAR" },
-      rain: { icon: "iconRainCloud", label: "RAIN" },
-      snow: { icon: "iconSnowflake", label: "SNOW" },
+      clear: { icon: "iconSun" },
+      rain: { icon: "iconRainCloud" },
+      snow: { icon: "iconSnowflake" },
     };
     let idx = 0;
     const tried = new Set();
@@ -590,7 +654,7 @@
       field.innerHTML = "";
       document.documentElement.setAttribute("data-weather", state);
       icon.innerHTML = sprite(meta[state].icon, 2);
-      label.textContent = meta[state].label;
+      label.textContent = tr(state);
       if (state !== "clear") {
         tried.add(state);
         if (tried.has("rain") && tried.has("snow")) unlockAchievement("weather_watcher");
@@ -623,6 +687,7 @@
     });
 
     icon.innerHTML = sprite(meta.clear.icon, 2);
+    refreshWeatherLabel = () => (label.textContent = tr(states[idx]));
   }
 
   /* ---------- custom pixel cursor ---------- */
@@ -646,7 +711,7 @@
     document.addEventListener("visibilitychange", () => {
       // A browser tab title is plain text - there's no way to show a
       // pixel icon here, so this stays emoji-free text only.
-      document.title = document.hidden ? "Come back!" : original;
+      document.title = document.hidden ? tr("come_back") : original;
     });
   }
 
@@ -681,14 +746,6 @@
   /* ---------- scroll effects: XP bar fill + "current section" compass ----------
      Both only need to know the scroll position, so they share one
      rAF-gated listener instead of each registering their own. */
-  const SECTION_LABELS = {
-    about: "ABOUT ME",
-    education: "EDUCATION",
-    work: "EXPERIENCE",
-    projects: "PROJECTS",
-    contact: "CONTACT",
-    patches: "CHANGELOG",
-  };
   function wireScrollEffects() {
     const fill = $("#xp-fill");
     const compass = $("#compass");
@@ -720,8 +777,8 @@
           break;
         }
       }
-      if (current && SECTION_LABELS[current]) {
-        compassLabel.textContent = SECTION_LABELS[current];
+      if (current && I18N.en["h_" + current]) {
+        compassLabel.textContent = tr("h_" + current);
         compass.classList.add("is-visible");
       } else {
         compass.classList.remove("is-visible");
@@ -803,6 +860,7 @@
       const btn = document.createElement("button");
       btn.className = "map-pin";
       btn.title = p.title;
+      btn.dataset.target = p.target;
       btn.innerHTML = `<span>${p.label}</span>`;
       btn.addEventListener("click", () => {
         closeMap();
@@ -891,7 +949,7 @@
       m.classList.add("is-shiny");
     });
     spawnLeaves(18);
-    showToast("ACHIEVEMENT UNLOCKED\nSecret Grove Found! A shiny blob rustles by.");
+    showToast(`${tr("ach_unlocked")}\n${tr("grove")}`);
     unlockAchievement("secret_grove", { silent: true });
     playBlip(988);
     setTimeout(() => playBlip(1318), 120);
@@ -939,7 +997,204 @@
     });
   }
 
+  /* ---------- language switch (EN / DE) ---------- */
+  function applyStaticText() {
+    $$("[data-i18n]").forEach((el) => (el.textContent = tr(el.dataset.i18n)));
+    $$("[data-i18n-title]").forEach((el) => (el.title = tr(el.dataset.i18nTitle)));
+    $$(".map-pin").forEach((b) => (b.title = tr("h_" + b.dataset.target)));
+    $("#lang-toggle").textContent = tr("lang_label");
+    $("#game-blob").setAttribute("aria-label", tr("game_title"));
+    refreshSoundLabel();
+    refreshWeatherLabel();
+    const night = document.documentElement.getAttribute("data-theme") === "night";
+    $("#theme-label").textContent = tr(night ? "day" : "night");
+  }
+
+  function applyLanguage(next) {
+    setLang(next);
+    storageSet(localStorage, "lang", lang);
+    applyStaticText();
+    renderHeroText();
+    renderTrainer();
+    renderEducation();
+    renderWork();
+    renderProjects();
+    renderContact();
+    renderPatchNotes();
+    renderAchievements();
+    if (contactTyped) {
+      const msg = $("#contact-message");
+      msg._tw = null; // cancel typing if it is still going
+      msg.textContent = D.contact.message;
+    }
+    window.dispatchEvent(new Event("scroll")); // refresh the compass label
+  }
+
+  function wireLang() {
+    $("#lang-toggle").addEventListener("click", () => {
+      applyLanguage(lang === "en" ? "de" : "en");
+      playBlip(lang === "de" ? 700 : 560);
+    });
+  }
+
+  /* ---------- secret: type "sudo" → developer HUD ---------- */
+  function wireDevMode() {
+    const hud = $("#dev-hud");
+    const started = Date.now();
+    let timer = null;
+    let typed = "";
+
+    function currentSection() {
+      const y = window.innerHeight * 0.35;
+      const sec = $$("main section").find((el) => {
+        const r = el.getBoundingClientRect();
+        return r.top <= y && r.bottom >= y;
+      });
+      return sec ? sec.id : "-";
+    }
+    function draw() {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = max > 0 ? Math.round((window.scrollY / max) * 100) : 0;
+      const secs = Math.floor((Date.now() - started) / 1000);
+      const row = (k, v) => k.padEnd(10) + v;
+      hud.textContent = [
+        "DEVELOPER MODE   (type sudo to close)",
+        row("lang", lang),
+        row("theme", document.documentElement.getAttribute("data-theme") || "day"),
+        row("weather", document.documentElement.getAttribute("data-weather") || "clear"),
+        row("sfx", soundOn ? "on" : "off"),
+        row("section", currentSection()),
+        row("scroll", pct + "%"),
+        row("viewport", window.innerWidth + "x" + window.innerHeight + " @" + (window.devicePixelRatio || 1) + "x"),
+        row("reduced", prefersReducedMotion() ? "motion off" : "motion on"),
+        row("badges", unlockedAchievements.size + "/" + ACHIEVEMENTS.length),
+        row("session", String(Math.floor(secs / 60)).padStart(2, "0") + ":" + String(secs % 60).padStart(2, "0")),
+      ].join("\n");
+    }
+    function setOpen(open) {
+      hud.hidden = !open;
+      clearInterval(timer);
+      if (open) {
+        draw();
+        timer = setInterval(draw, 500);
+        unlockAchievement("root_access");
+      }
+    }
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !hud.hidden) return setOpen(false);
+      if (e.ctrlKey || e.metaKey || e.altKey || e.key.length !== 1) return;
+      typed = (typed + e.key.toLowerCase()).slice(-4);
+      if (typed === "sudo") {
+        typed = "";
+        setOpen(hud.hidden);
+        playBlip(hud.hidden ? 440 : 880);
+      }
+    });
+  }
+
+  /* ---------- mini-game: Blob Catch (opened from the map) ---------- */
+  function wireGame() {
+    const SECONDS = 20;
+    const WIN_SCORE = 10; // score needed for the Blob Catcher badge
+    const modal = $("#game-modal");
+    const arena = $("#game-arena");
+    const blob = $("#game-blob");
+    const msg = $("#game-msg");
+    const startBtn = $("#game-start");
+    let score = 0;
+    let timeLeft = SECONDS;
+    let best = parseInt(storageGet(localStorage, "blobBest") || "0", 10) || 0;
+    let clock = null;
+    let hop = null;
+
+    blob.innerHTML = sprite("blobIdle", 4);
+    $("#game-best").textContent = best;
+
+    function show() {
+      $("#game-score").textContent = score;
+      $("#game-time").textContent = timeLeft;
+    }
+    function moveBlob() {
+      blob.hidden = false;
+      const x = Math.random() * (arena.clientWidth - blob.offsetWidth);
+      const y = Math.random() * (arena.clientHeight - blob.offsetHeight);
+      blob.style.left = Math.round(x) + "px";
+      blob.style.top = Math.round(y) + "px";
+      // the blob hops away faster the more you catch
+      clearTimeout(hop);
+      hop = setTimeout(moveBlob, Math.max(450, 1000 - score * 40));
+    }
+    function stop() {
+      clearInterval(clock);
+      clearTimeout(hop);
+      blob.hidden = true;
+    }
+    function end() {
+      stop();
+      const isBest = score > best;
+      if (isBest) {
+        best = score;
+        storageSet(localStorage, "blobBest", String(best));
+        $("#game-best").textContent = best;
+      }
+      if (score >= WIN_SCORE) unlockAchievement("blob_catcher");
+      msg.textContent = tr("game_over") + "\n" + score + (isBest && score > 0 ? "\n" + tr("game_new_best") : "");
+      startBtn.textContent = tr("game_again");
+      startBtn.hidden = false;
+      playBlip(isBest ? 988 : 440);
+    }
+    function start() {
+      stop();
+      score = 0;
+      timeLeft = SECONDS;
+      show();
+      msg.textContent = "";
+      startBtn.hidden = true;
+      moveBlob();
+      clock = setInterval(() => {
+        timeLeft--;
+        show();
+        if (timeLeft <= 0) end();
+      }, 1000);
+    }
+    function open() {
+      closeMap();
+      stop();
+      score = 0;
+      timeLeft = SECONDS;
+      show();
+      msg.textContent = "";
+      startBtn.hidden = false;
+      startBtn.textContent = tr("game_start");
+      modal.classList.add("is-open");
+      modal.setAttribute("aria-hidden", "false");
+      playBlip(740);
+    }
+    function close() {
+      stop();
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden", "true");
+    }
+
+    blob.addEventListener("click", () => {
+      score++;
+      show();
+      playBlip(600 + score * 25);
+      moveBlob();
+    });
+    startBtn.addEventListener("click", start);
+    $("#game-open").addEventListener("click", open);
+    $("#game-close").addEventListener("click", close);
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) close();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") close();
+    });
+  }
+
   function init() {
+    setLang(storageGet(localStorage, "lang") || ((navigator.language || "").toLowerCase().startsWith("de") ? "de" : "en"));
     wireBoot();
     loadAchievements();
     renderAchievements();
@@ -961,6 +1216,10 @@
     wireEasterEgg();
     wireTheme();
     wireWeather();
+    wireLang();
+    wireDevMode();
+    wireGame();
+    applyStaticText();
     wireScrollEffects();
     wireCursor();
     wireTabTitleTrick();

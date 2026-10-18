@@ -32,13 +32,13 @@
 </head>
 <body>
 
-<a class="skip-link" href="#app">Skip to content</a>
+<a class="skip-link" href="#app" data-i18n="skip">Skip to content</a>
 
 <div class="boot-screen" id="boot-screen" aria-hidden="true">
   <div class="boot-screen__inner">
     <p class="boot-screen__title">MARKO<span>CERKEZ</span>.CH</p>
     <div class="boot-bar"><div class="boot-bar__fill" id="boot-fill"></div></div>
-    <p class="boot-screen__hint">LOADING...</p>
+    <p class="boot-screen__hint" data-i18n="loading">LOADING...</p>
   </div>
 </div>
 
@@ -56,17 +56,18 @@
   </div>
   <div class="topbar__controls" id="topbar-controls">
     <nav class="menu" aria-label="Main menu">
-      <button data-target="about">ABOUT</button>
-      <button data-target="education">EDUCATION</button>
-      <button data-target="work">EXPERIENCE</button>
-      <button data-target="projects">PROJECTS</button>
-      <button data-target="contact">CONTACT</button>
-      <button data-target="patches">CHANGELOG</button>
+      <button data-target="about" data-i18n="nav_about">ABOUT</button>
+      <button data-target="education" data-i18n="nav_education">EDUCATION</button>
+      <button data-target="work" data-i18n="nav_work">EXPERIENCE</button>
+      <button data-target="projects" data-i18n="nav_projects">PROJECTS</button>
+      <button data-target="contact" data-i18n="nav_contact">CONTACT</button>
+      <button data-target="patches" data-i18n="nav_patches">CHANGELOG</button>
     </nav>
-    <button id="map-toggle" class="icon-btn" title="Open the overworld map"><span class="icon-btn__icon" id="map-toggle-icon"></span> MAP</button>
-    <button id="weather-toggle" class="icon-btn" title="Cycle the weather"><span class="icon-btn__icon" id="weather-icon"></span> <span id="weather-label">CLEAR</span></button>
-    <button id="theme-toggle" class="icon-btn" title="Toggle day / night"><span class="icon-btn__icon" id="theme-icon"></span> <span id="theme-label">NIGHT</span></button>
-    <button id="sound-toggle" class="icon-btn" title="Toggle sound" aria-pressed="false">SFX: OFF</button>
+    <button id="map-toggle" class="icon-btn" title="Open the overworld map" data-i18n-title="map_title"><span class="icon-btn__icon" id="map-toggle-icon"></span> <span data-i18n="map">MAP</span></button>
+    <button id="weather-toggle" class="icon-btn" title="Cycle the weather" data-i18n-title="weather_title"><span class="icon-btn__icon" id="weather-icon"></span> <span id="weather-label">CLEAR</span></button>
+    <button id="theme-toggle" class="icon-btn" title="Toggle day / night" data-i18n-title="theme_title"><span class="icon-btn__icon" id="theme-icon"></span> <span id="theme-label">NIGHT</span></button>
+    <button id="sound-toggle" class="icon-btn" title="Toggle sound" data-i18n-title="sound_title" aria-pressed="false">SFX: OFF</button>
+    <button id="lang-toggle" class="icon-btn" title="Switch language" data-i18n-title="lang_title">LANG: EN</button>
   </div>
   <div class="xp-bar" id="xp-bar"><div class="xp-bar__fill" id="xp-fill"></div></div>
 </header>
@@ -90,26 +91,26 @@
         <div id="hero-intro-lines"></div>
         <span class="dialog-box__cursor">▶</span>
       </div>
-      <button class="press-start" id="scroll-start">PRESS START ▾</button>
+      <button class="press-start" id="scroll-start" data-i18n="press_start">PRESS START ▾</button>
     </div>
     <div class="hero__ground" id="hero-ground"></div>
   </section>
 
   <section id="about" class="panel">
-    <h2 class="panel__title"><span class="panel__title-badge">01</span> ABOUT ME</h2>
+    <h2 class="panel__title"><span class="panel__title-badge">01</span> <span data-i18n="h_about">ABOUT ME</span></h2>
     <div class="trainer-card">
       <div class="trainer-card__portrait" id="trainer-portrait"></div>
       <div class="trainer-card__info">
         <div class="trainer-card__row">
-          <span class="trainer-card__label">NAME</span>
+          <span class="trainer-card__label" data-i18n="lbl_name">NAME</span>
           <span class="trainer-card__value" id="trainer-name"></span>
         </div>
         <div class="trainer-card__row">
-          <span class="trainer-card__label">ROLE</span>
+          <span class="trainer-card__label" data-i18n="lbl_role">ROLE</span>
           <span class="trainer-card__value" id="trainer-class"></span>
         </div>
         <div class="trainer-card__row">
-          <span class="trainer-card__label">FROM</span>
+          <span class="trainer-card__label" data-i18n="lbl_from">FROM</span>
           <span class="trainer-card__value" id="trainer-location"></span>
         </div>
         <p class="trainer-card__bio" id="trainer-bio"></p>
@@ -120,23 +121,23 @@
   </section>
 
   <section id="education" class="panel panel--alt">
-    <h2 class="panel__title"><span class="panel__title-badge">02</span> EDUCATION</h2>
+    <h2 class="panel__title"><span class="panel__title-badge">02</span> <span data-i18n="h_education">EDUCATION</span></h2>
     <div class="quest-log" id="quest-log"></div>
   </section>
 
   <section id="work" class="panel">
-    <h2 class="panel__title"><span class="panel__title-badge">03</span> EXPERIENCE</h2>
+    <h2 class="panel__title"><span class="panel__title-badge">03</span> <span data-i18n="h_work">EXPERIENCE</span></h2>
     <div class="world-map" id="world-map"></div>
   </section>
 
   <section id="projects" class="panel panel--alt">
-    <h2 class="panel__title"><span class="panel__title-badge">04</span> PROJECTS</h2>
-    <p class="panel__hint">Hover or tap a chest to open it.</p>
+    <h2 class="panel__title"><span class="panel__title-badge">04</span> <span data-i18n="h_projects">PROJECTS</span></h2>
+    <p class="panel__hint" data-i18n="projects_hint">Hover or tap a chest to open it.</p>
     <div class="item-bag" id="item-bag"></div>
   </section>
 
   <section id="contact" class="panel contact">
-    <h2 class="panel__title"><span class="panel__title-badge">05</span> CONTACT</h2>
+    <h2 class="panel__title"><span class="panel__title-badge">05</span> <span data-i18n="h_contact">CONTACT</span></h2>
     <div class="npc-scene">
       <div class="npc-scene__mascot" id="npc-mascot"></div>
       <div class="dialog-box dialog-box--wide">
@@ -148,8 +149,8 @@
   </section>
 
   <section id="patches" class="panel panel--alt">
-    <h2 class="panel__title"><span class="panel__title-badge">06</span> CHANGELOG</h2>
-    <h3 class="badge-shelf__title">ACHIEVEMENTS</h3>
+    <h2 class="panel__title"><span class="panel__title-badge">06</span> <span data-i18n="h_patches">CHANGELOG</span></h2>
+    <h3 class="badge-shelf__title" data-i18n="achievements">ACHIEVEMENTS</h3>
     <div class="badge-shelf" id="badge-shelf"></div>
     <div class="patch-notes" id="patch-notes"></div>
   </section>
@@ -158,19 +159,42 @@
 
 <footer class="footer">
   <p id="footer-text"></p>
-  <button class="icon-btn" id="back-to-top">▲ TOP</button>
+  <button class="icon-btn" id="back-to-top" data-i18n="top">▲ TOP</button>
 </footer>
 
 <div class="map-modal" id="map-modal" aria-hidden="true">
   <div class="map-modal__panel" role="dialog" aria-label="Overworld map">
     <div class="map-modal__header">
-      <span><span class="icon-btn__icon" id="map-modal-icon"></span> OVERWORLD MAP</span>
-      <button id="map-close" class="icon-btn">✕ CLOSE</button>
+      <span><span class="icon-btn__icon" id="map-modal-icon"></span> <span data-i18n="map_header">OVERWORLD MAP</span></span>
+      <button id="map-close" class="icon-btn" data-i18n="close">✕ CLOSE</button>
     </div>
     <div class="map-modal__stage" id="map-stage"></div>
-    <p class="map-modal__hint">Click a numbered flag to warp to that part of the site.</p>
+    <p class="map-modal__hint" data-i18n="map_hint">Click a numbered flag to warp to that part of the site.</p>
+    <p class="map-modal__hint"><button id="game-open" class="icon-btn" data-i18n="game_btn">▶ BLOB CATCH</button></p>
   </div>
 </div>
+
+<div class="map-modal" id="game-modal" aria-hidden="true">
+  <div class="map-modal__panel" role="dialog" aria-labelledby="game-title">
+    <div class="map-modal__header">
+      <span id="game-title" data-i18n="game_title">BLOB CATCH</span>
+      <button id="game-close" class="icon-btn" data-i18n="close">✕ CLOSE</button>
+    </div>
+    <div class="game-hud">
+      <span><span data-i18n="game_score">SCORE</span> <b id="game-score">0</b></span>
+      <span><span data-i18n="game_time">TIME</span> <b id="game-time">20</b></span>
+      <span><span data-i18n="game_best">BEST</span> <b id="game-best">0</b></span>
+    </div>
+    <div class="game-arena" id="game-arena">
+      <div class="game-arena__msg" id="game-msg"></div>
+      <button class="game-blob" id="game-blob" aria-label="Blob" hidden></button>
+    </div>
+    <p class="map-modal__hint" data-i18n="game_hint">Catch as many blobs as you can in 20 seconds.</p>
+    <p class="map-modal__hint"><button id="game-start" class="icon-btn" data-i18n="game_start">START</button></p>
+  </div>
+</div>
+
+<pre class="dev-hud" id="dev-hud" aria-hidden="true" hidden></pre>
 
 <div class="leaf-field" id="leaf-field" aria-hidden="true"></div>
 <div class="weather-field" id="weather-field" aria-hidden="true"></div>
@@ -178,6 +202,7 @@
 
 <script src="js/sprites.js"></script>
 <script src="js/content.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/script.js"></script>
 </body>
 </html>

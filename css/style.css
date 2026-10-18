@@ -986,6 +986,70 @@ img, svg { image-rendering: pixelated; }
   .map-modal__header span { font-size: 10px; }
 }
 
+/* ---------- Blob Catch mini-game + dev HUD ---------- */
+[hidden] { display: none !important; }
+.game-hud {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: var(--font-head);
+  font-size: 10px;
+  margin-bottom: 10px;
+}
+.game-hud b { color: var(--accent); }
+.game-arena {
+  position: relative;
+  width: min(80vw, 340px);
+  height: 220px;
+  border: 3px solid var(--ink);
+  border-radius: 6px;
+  overflow: hidden;
+  background: repeating-conic-gradient(var(--grass-1) 0 25%, var(--grass-2) 0 50%) 0 0 / 32px 32px;
+}
+.game-arena__msg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  text-align: center;
+  white-space: pre-line;
+  font-family: var(--font-head);
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--paper);
+  text-shadow: 2px 2px 0 var(--ink);
+  pointer-events: none;
+}
+.game-blob {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: none;
+  line-height: 0;
+  cursor: pointer;
+}
+.game-blob svg { display: block; }
+.dev-hud {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  z-index: 250;
+  margin: 0;
+  padding: 10px 12px;
+  background: rgba(10, 8, 20, 0.88);
+  color: #7dffa8;
+  border: 2px solid #7dffa8;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.25;
+  pointer-events: none;
+  max-width: calc(100vw - 24px);
+  overflow: hidden;
+}
+
 /* ---------- weather toggle ---------- */
 .weather-field {
   position: fixed;
@@ -1241,7 +1305,7 @@ img, svg { image-rendering: pixelated; }
 /* ---------- print: strip game chrome down to a clean readable page ---------- */
 @media print {
   .topbar, .xp-bar, .boot-screen, .compass, .ambient-bg, .crt-overlay,
-  .weather-field, .leaf-field, .toast, .map-modal, #back-to-top,
+  .weather-field, .leaf-field, .toast, .map-modal, .dev-hud, #back-to-top,
   .hero__scenery, .hero__ground, .hero__sky, .hero__mascot, .press-start,
   #patches, .dialog-box__cursor {
     display: none !important;
