@@ -408,7 +408,7 @@
     wrap.innerHTML = "";
     ACHIEVEMENTS.forEach((a0) => {
       const a = achText(a0);
-      const unlocked = unlockedAchievements.has(a.id);
+      const unlocked = unlockedAchievements.has(a0.id);
       const div = document.createElement("div");
       div.className = "badge " + (unlocked ? "is-unlocked" : "is-locked");
       const iconSvg = unlocked ? badgeIconSVG(a0.icon) : sprite("badgeLocked", 4);
