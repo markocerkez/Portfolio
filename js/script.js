@@ -561,11 +561,12 @@
 
   /* ---------- tiny 8-bit beep (no audio files, self-generated) ---------- */
   let audioCtx = null;
-  let soundOn = false;
+  let soundOn = storageGet(localStorage, "sfx") === "on";
   function playBlip(freq) {
     if (!soundOn) return;
     try {
       audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume(); // restored "on" starts before any click
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       osc.type = "square";
@@ -586,6 +587,7 @@
     const btn = $("#sound-toggle");
     btn.addEventListener("click", () => {
       soundOn = !soundOn;
+      storageSet(localStorage, "sfx", soundOn ? "on" : "off");
       refreshSoundLabel();
       btn.setAttribute("aria-pressed", String(soundOn));
       if (soundOn) playBlip(660);
@@ -683,10 +685,16 @@
     btn.addEventListener("click", () => {
       idx = (idx + 1) % states.length;
       renderWeather(states[idx]);
+      storageSet(localStorage, "weather", states[idx]);
       playBlip(520 + idx * 80);
     });
 
     icon.innerHTML = sprite(meta.clear.icon, 2);
+    const savedWeather = storageGet(localStorage, "weather");
+    if (savedWeather && savedWeather !== "clear" && states.includes(savedWeather)) {
+      idx = states.indexOf(savedWeather);
+      renderWeather(savedWeather);
+    }
     refreshWeatherLabel = () => (label.textContent = tr(states[idx]));
   }
 
@@ -1003,6 +1011,13 @@
     $$("[data-i18n-title]").forEach((el) => (el.title = tr(el.dataset.i18nTitle)));
     $$(".map-pin").forEach((b) => (b.title = tr("h_" + b.dataset.target)));
     $("#lang-toggle").textContent = tr("lang_label");
+    // Browsers and JS-running scrapers get the right language; most social
+    // crawlers don't run JS and will still see the English tags in index.html.
+    $('meta[name="description"]').content = tr("meta_desc");
+    ["og:description", "twitter:description"].forEach((n) => {
+      const m = $(`meta[property="${n}"], meta[name="${n}"]`);
+      if (m) m.content = tr("meta_og");
+    });
     $("#game-blob").setAttribute("aria-label", tr("game_title"));
     refreshSoundLabel();
     refreshWeatherLabel();
@@ -1037,6 +1052,37 @@
     });
   }
 
+  /* ---------- keyboard shortcuts: 1-6 / J / K / M / ? ---------- */
+  function currentSectionId() {
+    const y = window.innerHeight * 0.35;
+    const sec = $$("main section").find((el) => {
+      const r = el.getBoundingClientRect();
+      return r.top <= y && r.bottom >= y;
+    });
+    return sec ? sec.id : null;
+  }
+  function wireKeys() {
+    const order = $$("main section").map((el) => el.id); // hero, about, ... patches
+    function go(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      closeMobileMenuInstant();
+      el.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
+      playBlip(520);
+    }
+    document.addEventListener("keydown", (e) => {
+      if (e.ctrlKey || e.metaKey || e.altKey || e.key.length !== 1) return;
+      if ($$(".map-modal.is-open").length) return; // map / game own the keyboard
+      const k = e.key.toLowerCase();
+      if (k >= "1" && k <= "6") go(order[Number(k)]);
+      else if (k === "j" || k === "k") {
+        const i = Math.max(0, order.indexOf(currentSectionId()));
+        go(order[Math.min(order.length - 1, Math.max(0, i + (k === "j" ? 1 : -1)))]);
+      } else if (k === "m") openMap();
+      else if (k === "?") showToast(tr("keys_help"), 5000);
+    });
+  }
+
   /* ---------- secret: type "sudo" → developer HUD ---------- */
   function wireDevMode() {
     const hud = $("#dev-hud");
@@ -1044,14 +1090,6 @@
     let timer = null;
     let typed = "";
 
-    function currentSection() {
-      const y = window.innerHeight * 0.35;
-      const sec = $$("main section").find((el) => {
-        const r = el.getBoundingClientRect();
-        return r.top <= y && r.bottom >= y;
-      });
-      return sec ? sec.id : "-";
-    }
     function draw() {
       const max = document.documentElement.scrollHeight - window.innerHeight;
       const pct = max > 0 ? Math.round((window.scrollY / max) * 100) : 0;
@@ -1063,7 +1101,7 @@
         row("theme", document.documentElement.getAttribute("data-theme") || "day"),
         row("weather", document.documentElement.getAttribute("data-weather") || "clear"),
         row("sfx", soundOn ? "on" : "off"),
-        row("section", currentSection()),
+        row("section", currentSectionId() || "-"),
         row("scroll", pct + "%"),
         row("viewport", window.innerWidth + "x" + window.innerHeight + " @" + (window.devicePixelRatio || 1) + "x"),
         row("reduced", prefersReducedMotion() ? "motion off" : "motion on"),
@@ -1219,6 +1257,7 @@
     wireLang();
     wireDevMode();
     wireGame();
+    wireKeys();
     applyStaticText();
     wireScrollEffects();
     wireCursor();

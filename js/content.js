@@ -131,6 +131,13 @@ const SITE_DATA = {
   // a nice bit of flavor and doubles as a real log of what changed.
   patchNotes: [
     {
+      version: "v1.6",
+      notes: [
+        "Keyboard shortcuts: 1-6 jump to a section, J / K step through them, M opens the map, ? shows the list.",
+        "Sound and weather settings are now remembered between visits.",
+      ],
+    },
+    {
       version: "v1.5",
       notes: [
         "The whole site now speaks German too - switch with the LANG button (it starts in your browser's language).",

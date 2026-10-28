@@ -65,6 +65,9 @@ const I18N = {
     game_again: "PLAY AGAIN",
     game_over: "TIME'S UP!",
     game_new_best: "NEW BEST!",
+    meta_desc: "Marko Cerkez - portfolio: education, experience and projects, retro-game style.",
+    meta_og: "A retro, pixel-art portfolio - about, education, experience, projects and more.",
+    keys_help: "KEYS\n1-6 jump to a section\nJ / K next / previous section\nM map   ? this help",
   },
   de: {
     skip: "Zum Inhalt springen",
@@ -124,6 +127,9 @@ const I18N = {
     game_again: "NOCHMAL",
     game_over: "ZEIT ABGELAUFEN!",
     game_new_best: "NEUER REKORD!",
+    meta_desc: "Marko Cerkez - Portfolio: Ausbildung, Erfahrung und Projekte im Retro-Game-Stil.",
+    meta_og: "Ein Retro-Portfolio im Pixel-Look - über mich, Ausbildung, Erfahrung, Projekte und mehr.",
+    keys_help: "TASTEN\n1-6 zum Abschnitt springen\nJ / K nächster / voriger Abschnitt\nM Karte   ? diese Hilfe",
   },
 };
 
@@ -202,6 +208,12 @@ const SITE_DATA_DE = {
     text: "Marko Cerkez - Pixel für Pixel gebaut.",
   },
   patchNotes: [
+    {
+      notes: [
+        "Tastenkürzel: 1-6 springen zu einem Abschnitt, J / K blättern durch, M öffnet die Karte, ? zeigt die Liste.",
+        "Ton- und Wettereinstellungen werden jetzt zwischen Besuchen gespeichert.",
+      ],
+    },
     {
       notes: [
         "Die ganze Seite spricht jetzt auch Deutsch - umschalten mit dem SPRACHE-Knopf (startet in der Sprache deines Browsers).",
