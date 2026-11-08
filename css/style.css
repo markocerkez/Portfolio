@@ -1034,7 +1034,11 @@ img, svg { image-rendering: pixelated; }
 .dev-hud {
   position: fixed;
   right: 12px;
-  bottom: 12px;
+  /* clears the achievement toast (bottom-right, up to ~90px tall) -
+     anchoring to the topbar's bottom edge instead doesn't work since
+     the topbar's own height varies as its buttons wrap at narrower
+     widths */
+  bottom: 110px;
   z-index: 250;
   margin: 0;
   padding: 10px 12px;
