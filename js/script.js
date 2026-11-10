@@ -285,7 +285,7 @@
       div.tabIndex = 0;
       const techHtml = (p.tech || []).map((t) => `<span>${t}</span>`).join("");
       const linkHtml = p.link
-        ? `<a class="item__link" href="${p.link}" target="_blank" rel="noopener">${tr("open")}</a>`
+        ? `<a class="item__link" href="${p.link}" target="_blank" rel="noopener noreferrer">${tr("open")}</a>`
         : "";
       div.innerHTML = `
         <div class="item__chest">
@@ -316,8 +316,8 @@
     links.innerHTML = "";
     const c = D.contact;
     if (c.email) links.innerHTML += `<a href="mailto:${c.email}"><span class="icon-btn__icon">${sprite("iconEnvelope", 2)}</span> EMAIL</a>`;
-    if (c.github) links.innerHTML += `<a href="${c.github}" target="_blank" rel="noopener">GITHUB</a>`;
-    if (c.linkedin) links.innerHTML += `<a href="${c.linkedin}" target="_blank" rel="noopener">LINKEDIN</a>`;
+    if (c.github) links.innerHTML += `<a href="${c.github}" target="_blank" rel="noopener noreferrer">GITHUB</a>`;
+    if (c.linkedin) links.innerHTML += `<a href="${c.linkedin}" target="_blank" rel="noopener noreferrer">LINKEDIN</a>`;
     $("#footer-text").textContent = D.footer.text;
   }
 
